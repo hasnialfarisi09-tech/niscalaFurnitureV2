@@ -109,6 +109,22 @@ export function MobileMenu({ inverse = false }: { inverse?: boolean }) {
 
                       {isExpanded && (
                         <ul className="my-1 ml-3 space-y-0.5 border-l-2 border-primary-container/40 pl-3">
+                          <li>
+                            <Link
+                              href={link.href}
+                              aria-current={pathname === link.href ? "page" : undefined}
+                              onClick={() => setOpen(false)}
+                              className={cn(
+                                "flex items-center justify-between rounded-md px-3 py-2 text-label-md font-semibold transition-[background-color,color] duration-150 mb-1 border-b border-border-hairline/60",
+                                pathname === link.href
+                                  ? "bg-surface-container-lowest text-primary shadow-hairline"
+                                  : "text-primary hover:bg-surface-container-low"
+                              )}
+                            >
+                              <span>Semua {link.label}</span>
+                              <span aria-hidden className="text-xs">→</span>
+                            </Link>
+                          </li>
                           {link.children.map((child) => {
                             const childActive = pathname === child.href;
                             return (

@@ -150,9 +150,29 @@ export function HeaderNav({ inverse = false }: HeaderNavProps) {
                     aria-orientation="vertical"
                   >
                     <div className="px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-gray">
-                      Wilayah Jangkauan
+                      {link.label === "Furniture Custom" ? "Kategori Custom" : "Wilayah Jangkauan"}
                     </div>
                     <ul className="space-y-0.5">
+                      <li role="none">
+                        <Link
+                          href={link.href}
+                          role="menuitem"
+                          className={cn(
+                            "flex items-center justify-between rounded-md px-2.5 py-2 text-label-md transition-colors duration-150 border-b border-border-hairline/60 mb-1 font-semibold",
+                            pathname === link.href
+                              ? inverse
+                                ? "bg-pure-white/15 text-inverse-on-surface"
+                                : "bg-surface-container-low text-primary"
+                              : inverse
+                                ? "text-inverse-on-surface/90 hover:bg-pure-white/10 hover:text-inverse-on-surface"
+                                : "text-on-surface hover:bg-surface-container-low hover:text-primary"
+                          )}
+                          onClick={() => setOpenDropdown(null)}
+                        >
+                          <span>Semua {link.label}</span>
+                          <span aria-hidden className="text-xs">→</span>
+                        </Link>
+                      </li>
                       {link.children.map((child) => {
                         const childActive = pathname === child.href;
                         return (

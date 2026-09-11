@@ -9,6 +9,16 @@ break by not knowing.
 
 ## Unreleased
 
+### Added Furniture Custom main page and category dropdown with 20+ reference galleries, 2-column mobile layout, and interactive lightbox
+- **What** Added "Furniture Custom" navigation link directly below "Portofolio" with a dropdown featuring 5 categories: Kitchen Set Custom, Lemari Custom, Lemari Bawah Tangga Custom, Backdrop TV Custom, and Furniture Kamar. Created a comprehensive hub page at `/furniture-custom` and 5 dynamic category galleries at `/furniture-custom/[slug]`, each loaded with at least 20 curated design references (116 total items). All galleries are laid out in responsive desktop grids and strictly 2 columns on mobile (`grid-cols-2`). Added an accessible, touch-friendly, full-screen interactive Lightbox modal (`ImageLightbox`) enabling visitors to enlarge every photo, navigate with arrows or swipe, view specifications, and consult directly via prefilled WhatsApp.
+- **Why** User request to add "Furniture Custom" under "Portofolio" as a main page with a category dropdown of the 5 specific categories, populate each category with minimal 20 reference images matching each title, format the mobile layout as 2 columns, and make all photos enlargeable on click.
+- **Watch** Image references in `src/data/custom-furniture.ts` map to optimized WebP imagery in `public/images/custom-furniture/` and `public/images/portfolio/` (all 116 references verified and audited to ensure 0 broken links). Routes are indexed in `src/app/sitemap.ts`.
+
+### Ignored generated image variants directory in git
+- **What** Added `/public/v/` to `.gitignore`.
+- **Why** Image variants are generated locally and during deployment builds; tracking them caused repository bloat and binary merge conflicts.
+- **Watch** Deployment environments must run the build step or upload the generated `public/v/` directory, as the site layout depends on these variants.
+
 ### Updated material section photos to match technical substrate and hardware specifications
 - **What** Replaced the two general under-stair cabinet photos in `src/data/projects.ts` (`materialImages`) used by `src/components/sections/materials.tsx` with dedicated, authentic high-resolution photographs representing the actual technical specifications: one showing dense export-grade multipleks (plywood) layers, green moisture-resistant HMR core, and clean ABS machine edging, and one showing a premium stainless steel slow-motion hydraulic soft-close hinge and undermount soft-close drawer slide.
 - **Why** User request to replace the two mismatched under-stair cabinet images with imagery directly depicting the materials described (Plywood/HMR, HPL/Duco, slow-motion hinges, and ABS machine edging).
@@ -81,6 +91,11 @@ break by not knowing.
 - **Watch** Those values are per machine. `.env.local` is git-ignored, so they
   are never shared between developers, and production must not reuse a local
   one.
+
+### Published rewritten wardrobe and kitchen guides in custom articles
+- **What** Added rewritten, authoritative versions of `ukuran-ideal-lemari-pakaian` and `ergonomi-dan-layout-kitchen` to `src/data/custom-articles.json`.
+- **Why** Replaced baseline stubs with 10-block guides covering ergonomics, optimal cabinet clearances, and workflow triangles.
+- **Watch** `src/data/custom-articles.json` is modified at runtime by `/admin`. Changes here are deployed content and take precedence over baseline articles.
 
 ### Closed an authentication bypass in the admin panel
 - **What** Removed every credential default from `src/lib/auth.ts`, split the

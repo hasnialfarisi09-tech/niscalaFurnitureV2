@@ -8,6 +8,7 @@ import {
   projects,
 } from "@/data/projects";
 import { serviceAreas } from "@/data/service-areas";
+import { customFurnitureCategories } from "@/data/custom-furniture";
 import { site } from "@/lib/site";
 
 /**
@@ -52,6 +53,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: portfolioDate,
       changeFrequency: "monthly",
       priority: 0.9,
+    },
+    {
+      url: `${site.url}/furniture-custom`,
+      lastModified: staticDate,
+      changeFrequency: "weekly",
+      priority: 0.95,
     },
     {
       url: `${site.url}/services`,
@@ -133,8 +140,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
+  const customFurnitureRoutes: MetadataRoute.Sitemap = customFurnitureCategories.map((cat) => ({
+    url: `${site.url}/furniture-custom/${cat.slug}`,
+    lastModified: staticDate,
+    changeFrequency: "weekly",
+    priority: 0.9,
+  }));
+
   return [
     ...staticRoutes,
+    ...customFurnitureRoutes,
     ...serviceAreaRoutes,
     ...categoryRoutes,
     ...projectRoutes,
