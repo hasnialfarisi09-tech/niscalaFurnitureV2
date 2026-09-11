@@ -9,6 +9,11 @@ break by not knowing.
 
 ## Unreleased
 
+### Reduced mobile hero background scrim opacity to 10%
+- **What** Changed the mobile background overlay in `src/components/sections/hero.tsx` from `bg-deep-black/85` to `bg-deep-black/10`.
+- **Why** The 85% black overlay made the hero background photograph too dark and barely visible on mobile screens.
+- **Watch** Lighter background means text contrast depends more on the underlying photograph; keep an eye on headline legibility across different cycling hero frames.
+
 ### A runnable migration prompt for the second developer's agent
 - **What** `SYNC-AGENT.md`: step-by-step instructions an AI agent executes to
   move Developer B's clone onto this repository, with a proof step before the
