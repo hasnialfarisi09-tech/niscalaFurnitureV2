@@ -9,6 +9,11 @@ break by not knowing.
 
 ## Unreleased
 
+### Moved quick estimation survey form directly below hero
+- **What** Repositioned the `<Survey />` section ("Rencanakan Ruangan Impian Anda") in `src/app/page.tsx` to sit immediately beneath `<Hero />` and directly above `<Problems />` ("Sebelum memilih furniture"), with vertical spacing tailored for the placement.
+- **Why** Prioritizes the interactive 4-step consultation and estimation flow directly after the first screen fold.
+- **Watch** `CtaBanner` now directly precedes `BehindTheScenes` and uses `reserveCurveSpace={true}` to prevent curve overlap.
+
 ### Added public review form with email capture and notification to info@niscalafurniture.com
 - **What** Added an email address field to `ReviewForm` and `submitReviewAction`, configured automated email notifications to `info@niscalafurniture.com` via `src/lib/email.ts` (using nodemailer / SMTP / webhook fallback), and ensured the email is kept strictly private for developer/internal data by stripping it from public API and UI rendering.
 - **Why** Enables the studio team to receive immediate email notifications of new public reviews and follow up directly with the submitter, while protecting client privacy.

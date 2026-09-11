@@ -8,7 +8,7 @@ export function Survey() {
   return (
     <section
       id={SURVEY_ANCHOR_ID}
-      className="bg-surface pb-space-4xl pt-[calc(var(--spacing-space-4xl)+var(--spacing-space-lg))] lg:pt-[calc(var(--spacing-space-4xl)+var(--spacing-space-2xl))]"
+      className="bg-surface py-space-3xl lg:py-space-4xl"
     >
       <div className="container-editorial">
         <Reveal className="mx-auto max-w-3xl">

@@ -85,6 +85,7 @@ export default function HomePage() {
       />
 
       <Hero />
+      <Survey />
       <Problems />
       <Approach />
       <PortfolioPreview />
@@ -97,8 +98,7 @@ export default function HomePage() {
       <Guarantees />
       <Testimonials />
       <Faq />
-      <CtaBanner reserveCurveSpace={false} />
-      <Survey />
+      <CtaBanner reserveCurveSpace={true} />
       <BehindTheScenes />
       <ClosingCta />
     </>
