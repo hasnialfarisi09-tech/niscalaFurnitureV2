@@ -59,7 +59,7 @@ export function Hero() {
         photograph is left alone. Both hold white body text above 4.5:1 even
         where a frame is at its brightest.
       */}
-      <div aria-hidden className="absolute inset-0 bg-deep-black/10 lg:hidden" />
+      <div aria-hidden className="absolute inset-0 bg-deep-black/30 lg:hidden" />
       {/*
         The header floats over this section with no surface of its own, and its
         links sit to the right where the side scrim has already faded out. This
