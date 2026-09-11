@@ -5,6 +5,7 @@ export type PublicReview = {
   id: string;
   author: string;
   address: string;
+  email?: string;
   rating: number; // 1 to 5
   description: string;
   createdAt: string;
@@ -14,14 +15,14 @@ export type PublicReview = {
 const REVIEWS_FILE_PATH = path.join(process.cwd(), "src", "data", "public-reviews.json");
 
 /**
- * Reads public reviews stored on filesystem.
+ * Reads all stored reviews from filesystem (includes developer/admin private data like email).
  */
-export async function getPublicReviews(): Promise<PublicReview[]> {
+export async function getAllReviewsRaw(): Promise<PublicReview[]> {
   try {
     const data = await fs.readFile(REVIEWS_FILE_PATH, "utf-8");
     const parsed = JSON.parse(data);
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter((r) => r && r.isPublic !== false);
+    return parsed;
   } catch (err: unknown) {
     if (
       typeof err === "object" &&
@@ -37,6 +38,20 @@ export async function getPublicReviews(): Promise<PublicReview[]> {
     }
     return [];
   }
+}
+
+/**
+ * Reads reviews safe for public consumption.
+ * The email address is deliberately stripped so it is NEVER exposed to the public.
+ */
+export async function getPublicReviews(): Promise<PublicReview[]> {
+  const all = await getAllReviewsRaw();
+  return all
+    .filter((r) => r && r.isPublic !== false)
+    .map((r) => ({
+      ...r,
+      email: undefined, // Stripped for privacy - developer internal only
+    }));
 }
 
 /**
@@ -57,16 +72,18 @@ async function writeReviews(reviews: PublicReview[]): Promise<void> {
 export async function savePublicReview(input: {
   author: string;
   address: string;
+  email?: string;
   rating: number;
   description: string;
 }): Promise<{ success: boolean; error?: string; review?: PublicReview }> {
   try {
-    const existing = await getPublicReviews();
+    const existing = await getAllReviewsRaw();
 
     const newReview: PublicReview = {
       id: `rev-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       author: input.author.trim(),
       address: input.address.trim(),
+      email: input.email ? input.email.trim() : undefined,
       rating: Math.max(1, Math.min(5, Math.round(input.rating))),
       description: input.description.trim(),
       createdAt: new Date().toISOString(),

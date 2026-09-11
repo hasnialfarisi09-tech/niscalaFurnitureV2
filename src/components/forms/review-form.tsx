@@ -206,6 +206,30 @@ export function ReviewForm() {
             </div>
           </div>
 
+          {/* Input Email (Private / Developer Data Only) */}
+          <div className="space-y-space-2xs">
+            <div className="flex flex-wrap items-center justify-between gap-1">
+              <label htmlFor="review-email" className="block text-label-md font-semibold text-on-surface">
+                Alamat Email <span className="text-error">*</span>
+              </label>
+              <span className="text-[11px] font-medium text-muted-gray">
+                🔒 Privat (tidak dipublikasikan, hanya untuk data developer/internal)
+              </span>
+            </div>
+            <input
+              id="review-email"
+              name="email"
+              type="email"
+              required
+              placeholder="Contoh: nama@email.com"
+              className={controlClasses}
+              disabled={isPending}
+            />
+            {result && !result.success && result.fieldErrors?.email ? (
+              <p className="text-body-sm text-error">{result.fieldErrors.email}</p>
+            ) : null}
+          </div>
+
           {/* Textarea Saran / Kritik / Ulasan */}
           <div className="space-y-space-2xs">
             <label htmlFor="review-desc" className="block text-label-md font-semibold text-on-surface">

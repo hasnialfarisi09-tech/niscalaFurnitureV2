@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { savePublicReview } from "@/lib/reviews";
+import { sendReviewEmailNotification } from "@/lib/email";
 
 const reviewSchema = z.object({
   name: z
@@ -15,6 +16,10 @@ const reviewSchema = z.object({
     .trim()
     .min(2, "Alamat / kota wajib diisi (minimal 2 karakter).")
     .max(100, "Alamat / kota maksimal 100 karakter."),
+  email: z
+    .string()
+    .trim()
+    .email("Format alamat email tidak valid (contoh: nama@domain.com)."),
   rating: z.coerce
     .number()
     .int()
@@ -37,6 +42,7 @@ export async function submitReviewAction(
   const raw = {
     name: formData.get("name"),
     address: formData.get("address"),
+    email: formData.get("email"),
     rating: formData.get("rating"),
     description: formData.get("description"),
   };
@@ -62,20 +68,29 @@ export async function submitReviewAction(
   const result = await savePublicReview({
     author: parsed.data.name,
     address: parsed.data.address,
+    email: parsed.data.email,
     rating: parsed.data.rating,
     description: parsed.data.description,
   });
 
-  if (!result.success) {
+  if (!result.success || !result.review) {
     return {
       success: false,
       error: result.error || "Gagal mengirimkan ulasan. Silakan coba lagi.",
     };
   }
 
+  // Dispatch email notification to info@niscalafurniture.com
+  try {
+    await sendReviewEmailNotification(result.review);
+  } catch (err) {
+    console.error("[reviews] Background email dispatch error:", err);
+    // Don't fail user review submission if email delivery is pending or delayed
+  }
+
   revalidatePath("/");
   return {
     success: true,
-    message: "Terima kasih atas ulasan dan masukan Anda! Ulasan Anda telah berhasil disimpan.",
+    message: "Terima kasih atas ulasan dan masukan Anda! Ulasan Anda telah berhasil disimpan dan diteruskan ke tim Niscala.",
   };
 }

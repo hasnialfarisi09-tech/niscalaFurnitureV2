@@ -9,10 +9,10 @@ break by not knowing.
 
 ## Unreleased
 
-### Added public review and feedback submission form
-- **What** Added an interactive client review form (`ReviewForm`) in the Testimonials section with fields for author name, address/city, 1-5 star rating, and review/critique/suggestion description, backed by `submitReviewAction` and atomic JSON storage in `src/data/public-reviews.json`.
-- **Why** Allows clients and visitors to directly submit testimonials, feedback, or critiques on the website, with reviews rendered dynamically in the Testimonials section.
-- **Watch** `src/data/public-reviews.json` is modified at runtime by public submissions, similar to `custom-articles.json`.
+### Added public review form with email capture and notification to info@niscalafurniture.com
+- **What** Added an email address field to `ReviewForm` and `submitReviewAction`, configured automated email notifications to `info@niscalafurniture.com` via `src/lib/email.ts` (using nodemailer / SMTP / webhook fallback), and ensured the email is kept strictly private for developer/internal data by stripping it from public API and UI rendering.
+- **Why** Enables the studio team to receive immediate email notifications of new public reviews and follow up directly with the submitter, while protecting client privacy.
+- **Watch** Outgoing email requires SMTP variables in `.env.local` to deliver directly from server; without SMTP it logs safely and does not block review persistence.
 
 ### Set mobile hero background scrim opacity to 30%
 - **What** Changed the mobile background overlay in `src/components/sections/hero.tsx` from `bg-deep-black/85` to `bg-deep-black/30`.
