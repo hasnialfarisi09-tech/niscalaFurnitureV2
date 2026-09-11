@@ -28,7 +28,8 @@ peta yang salah lebih mahal daripada tidak ada peta.
 - `src/components/motion`: wrapper reveal, parallax, smooth scroll, page transition.
 - `src/components/portfolio`: grid, gallery, category filter.
 - `src/components/ui`: komponen dasar seperti button, typography, accordion, CTA, project card.
-- `src/data`: seluruh copy/content terstruktur, kategori, knowledge, testimonials, projects.
+- `src/data`: seluruh copy/content terstruktur, kategori, knowledge, service-areas, testimonials, projects.
+- `src/data/service-areas.ts`: data 6 area layanan utama dan kategori artikel terkait (Bandung, Cimahi, Bandung Barat, Jakarta, Tangerang, Bekasi).
 - `src/data/generated/portfolio-manifest.json` dan `interior-manifest.json`: sumber data hasil pipeline gambar.
 - `src/data/custom-articles.json`: artikel yang ditulis panel admin **saat runtime**. Ikut dilacak git.
 - `src/app/admin/**` dan `src/components/admin/**`: panel artikel di balik login.
@@ -46,7 +47,8 @@ peta yang salah lebih mahal daripada tidak ada peta.
 - `/portfolio`: listing semua proyek.
 - `/portfolio/[slug]`: detail proyek; `dynamicParams = false`, slug dari `projects`.
 - `/portfolio/kategori/[slug]`: listing kategori; dipisah agar tidak bentrok dengan slug proyek.
-- `/services`: halaman layanan.
+- `/services`: halaman layanan dan ikhtisar jangkauan area.
+- `/services/[slug]`: halaman kategori layanan area (Bandung, Cimahi, Bandung Barat, Jakarta, Tangerang, Bekasi) terhubung ke artikel per area.
 - `/knowledge`: listing artikel.
 - `/knowledge/[slug]`: detail artikel; slug dari `knowledgeArticles` di-overlay artikel custom.
 - `/admin`, `/admin/login`, `/admin/articles/**`: panel artikel, di balik login.

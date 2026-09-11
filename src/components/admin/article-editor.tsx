@@ -15,7 +15,6 @@ import {
   Loader2,
   Check,
   AlertCircle,
-  HelpCircle,
 } from "lucide-react";
 
 import { saveArticleAction } from "@/app/actions/admin-articles";
@@ -28,6 +27,12 @@ import {
 import type { KnowledgeArticle, KnowledgeBlock } from "@/types";
 
 const PRESET_CATEGORIES = [
+  "Furniture Custom Bandung",
+  "Furniture Custom Cimahi",
+  "Furniture Custom Bandung Barat",
+  "Furniture Custom Jakarta",
+  "Furniture Custom Tangerang",
+  "Furniture Custom Bekasi",
   "Panduan Material",
   "Ergonomi Dapur",
   "Perencanaan & Ruang",

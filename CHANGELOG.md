@@ -9,6 +9,41 @@ break by not knowing.
 
 ## Unreleased
 
+### Updated material section photos to match technical substrate and hardware specifications
+- **What** Replaced the two general under-stair cabinet photos in `src/data/projects.ts` (`materialImages`) used by `src/components/sections/materials.tsx` with dedicated, authentic high-resolution photographs representing the actual technical specifications: one showing dense export-grade multipleks (plywood) layers, green moisture-resistant HMR core, and clean ABS machine edging, and one showing a premium stainless steel slow-motion hydraulic soft-close hinge and undermount soft-close drawer slide.
+- **Why** User request to replace the two mismatched under-stair cabinet images with imagery directly depicting the materials described (Plywood/HMR, HPL/Duco, slow-motion hinges, and ABS machine edging).
+- **Watch** Images are stored at `public/images/materials/` in 3:4 aspect ratio WebP and render with Next.js responsive image sets.
+
+### Limited related articles to 4 cards with visual thumbnails and "Panduan Lainnya" CTA button
+- **What** Updated the "Panduan lainnya" section in `src/app/knowledge/[slug]/page.tsx` to display exactly 4 relevant articles with context-matched image thumbnails, 2-column mobile layout (`grid-cols-2 lg:grid-cols-4`), and a prominent "Panduan Lainnya" button linking to `/knowledge`. Also added image blocks to baseline articles in `src/data/custom-articles.json` and `src/data/knowledge.ts`.
+- **Why** User request to show only 4 related guides with content-matched imagery and a "Panduan Lainnya" button below.
+- **Watch** Thumbnail selection prioritizes image blocks in `article.body` and falls back gracefully to contextual portfolio photography.
+
+### Added second wave of 9 problem-solution articles across all categories
+- **What** Appended 9 more in-depth articles to `src/data/custom-articles.json` (one per category across Bandung, Cimahi, Bandung Barat, Jakarta, Tangerang, Bekasi, Finishing, Desain, and Tips), bringing total custom articles to 21, each with portfolio photography, technical problem/solution breakdowns, and WhatsApp CTAs.
+- **Why** User request to add 9 additional articles across each category.
+- **Watch** Total custom articles count is now 21; all automatically inherit the 4-card portfolio showcase and WhatsApp consultation funnels.
+
+### Configured portfolio grids to 2 columns on mobile viewport
+- **What** Updated the portfolio grid layout in `src/app/knowledge/[slug]/page.tsx`, `src/components/portfolio/project-grid.tsx`, and `src/app/portfolio/[slug]/page.tsx` to display 2 columns on mobile viewports (`grid-cols-2 gap-space-sm sm:gap-gutter-desktop`) with 50vw mobile image sizing.
+- **Why** User request to use a 2-column layout on mobile for portfolio card areas.
+- **Watch** `ProjectCard` typography and padding scale smoothly on small screens with `text-[10px]` and `p-space-xs`.
+
+### Added 4 featured portfolio project cards with "Lihat Semua Portofolio" CTA under every article
+- **What** Enhanced `src/app/knowledge/[slug]/page.tsx` with a dedicated portfolio showcase section displaying 4 contextually matched project cards (prioritizing category/location relevance) using `ProjectCard`, followed by a prominent call-to-action button linking to `/portfolio`.
+- **Why** User request to showcase 4 real portfolio project cards under every article followed by a "Lihat Semua Portofolio" link.
+- **Watch** Projects are dynamically matched against article category/location metadata and capped at exactly 4 items.
+
+### Published comprehensive problem-solution articles across all categories with images and WhatsApp CTA
+- **What** Added 9 rich editorial articles to `src/data/custom-articles.json` spanning all service area categories (Bandung, Cimahi, Bandung Barat, Jakarta, Tangerang, Bekasi) and general categories (Finishing & Perawatan, Desain & Tata Letak, Tips & Inspirasi), each featuring actual portfolio photography, detailed problem-solution breakdowns, and WhatsApp consultation CTAs.
+- **Why** User request to populate articles across all categories explaining custom furniture with clear problems, solutions, relevant images, and WhatsApp consultation CTAs.
+- **Watch** Articles automatically feed into `/services/[slug]` landing pages and `/knowledge` by matching category names.
+
+### Transformed "Layanan" into "Layanan Area" category dropdown with dedicated area landing pages
+- **What** Replaced the single "Layanan" navigation link with a "Layanan Area" dropdown containing 6 city areas (Bandung, Cimahi, Bandung Barat, Jakarta, Tangerang, Bekasi) in both desktop HeaderNav and mobile drawer menu, linked them to new dynamic landing pages at `/services/[slug]`, added service area categories to admin article editor presets, and added area routes to sitemap.
+- **Why** User request to transform "Layanan" into a "Layanan Area" dropdown categorized by 6 service areas that developers can input and manage through articles.
+- **Watch** Each area in `src/data/service-areas.ts` uses the exact category name (e.g., "Furniture Custom Bandung") matched by `getAllArticles()` filtering.
+
 ### Moved quick estimation survey form directly below hero
 - **What** Repositioned the `<Survey />` section ("Rencanakan Ruangan Impian Anda") in `src/app/page.tsx` to sit immediately beneath `<Hero />` and directly above `<Problems />` ("Sebelum memilih furniture"), with vertical spacing tailored for the placement.
 - **Why** Prioritizes the interactive 4-step consultation and estimation flow directly after the first screen fold.

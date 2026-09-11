@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Clock } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
 
 import { Eyebrow } from "@/components/ui/typography";
+import { ProjectCard } from "@/components/ui/project-card";
 import { WhatsAppCta } from "@/components/ui/whatsapp-cta";
 import { FormattedText } from "@/components/ui/formatted-text";
 import {
   articleSeoTitle,
 } from "@/data/knowledge";
+import { projects } from "@/data/projects";
 import { getAllArticles, getArticleBySlug } from "@/lib/articles";
 import {
   ORGANISATION_ID,
@@ -123,6 +125,46 @@ function countWords(article: KnowledgeArticle): number {
   return text.split(/\s+/).filter(Boolean).length;
 }
 
+/**
+ * Returns thumbnail image for an article.
+ * Prioritizes the first image block in the article body, then falls back to contextual photography.
+ */
+function getArticleThumbnail(art: KnowledgeArticle): { src: string; alt: string } {
+  const imageBlock = art.body.find(
+    (b): b is { type: "image"; src: string; alt: string; caption?: string } =>
+      b.type === "image" && Boolean(b.src)
+  );
+
+  if (imageBlock?.src) {
+    return {
+      src: imageBlock.src,
+      alt: imageBlock.alt || art.title,
+    };
+  }
+
+  const text = `${art.slug} ${art.category} ${art.title}`.toLowerCase();
+  if (text.includes("kitchen") || text.includes("dapur") || text.includes("masak")) {
+    return { src: "/images/portfolio/kitchen-set/modern-01.webp", alt: art.title };
+  }
+  if (text.includes("wardrobe") || text.includes("lemari") || text.includes("closet") || text.includes("pakaian")) {
+    return { src: "/images/portfolio/wardrobe/wardrobe-2024-07-01.webp", alt: art.title };
+  }
+  if (text.includes("tangga") || text.includes("gudang")) {
+    return { src: "/images/portfolio/lemari-bawah-tangga/andri-padalarang-01.webp", alt: art.title };
+  }
+  if (text.includes("apartemen") || text.includes("studio")) {
+    return { src: "/images/portfolio/apartemen/ibu-finta-jakarta-selatan-01.webp", alt: art.title };
+  }
+  if (text.includes("tv") || text.includes("backdrop") || text.includes("living") || text.includes("keluarga")) {
+    return { src: "/images/portfolio/tv-backdrop/tv-backdrop-01.webp", alt: art.title };
+  }
+  if (text.includes("kerja") || text.includes("meja") || text.includes("kamar") || text.includes("bedroom")) {
+    return { src: "/images/portfolio/bedroom/bedroom-02.webp", alt: art.title };
+  }
+
+  return { src: "/images/portfolio/before-after/before-after-01.webp", alt: art.title };
+}
+
 export default async function ArticlePage(props: PageProps<"/knowledge/[slug]">) {
   const { slug } = await props.params;
   const article = await getArticleBySlug(slug);
@@ -130,7 +172,34 @@ export default async function ArticlePage(props: PageProps<"/knowledge/[slug]">)
   if (!article) notFound();
 
   const allArticles = await getAllArticles();
-  const others = allArticles.filter((item) => item.slug !== article.slug);
+
+  // Select up to 4 other articles, prioritizing same category first, then other categories
+  const sameCategoryOthers = allArticles.filter(
+    (item) =>
+      item.slug !== article.slug &&
+      item.category.trim().toLowerCase() === article.category.trim().toLowerCase()
+  );
+  const differentCategoryOthers = allArticles.filter(
+    (item) =>
+      item.slug !== article.slug &&
+      item.category.trim().toLowerCase() !== article.category.trim().toLowerCase()
+  );
+  const others = [...sameCategoryOthers, ...differentCategoryOthers].slice(0, 4);
+
+  // Select 4 relevant projects (prioritize category or location match)
+  const matchingProjects = projects.filter((p) => {
+    const catMatch =
+      article.category.toLowerCase().includes(p.categoryShort.toLowerCase()) ||
+      p.categoryName.toLowerCase().includes(article.category.toLowerCase());
+    const locMatch =
+      Boolean(p.location && article.category.toLowerCase().includes(p.location.toLowerCase()));
+    return catMatch || locMatch;
+  });
+
+  const featuredProjects = [
+    ...matchingProjects,
+    ...projects.filter((p) => !matchingProjects.some((m) => m.slug === p.slug)),
+  ].slice(0, 4);
 
   return (
     <>
@@ -315,27 +384,120 @@ export default async function ArticlePage(props: PageProps<"/knowledge/[slug]">)
         </div>
       </article>
 
+      {/* Portofolio Showcase: 4 Cards + Lihat Semua Portofolio */}
+      {featuredProjects.length > 0 ? (
+        <section className="border-t border-border-hairline bg-surface py-space-4xl">
+          <div className="container-editorial">
+            <div className="mb-space-2xl space-y-space-2xs text-center sm:text-left">
+              <Eyebrow>Karya Nyata Niscala</Eyebrow>
+              <h2 className="text-headline-md-mobile text-on-surface lg:text-headline-md">
+                Portofolio Pengerjaan Terkait
+              </h2>
+              <p className="max-w-2xl text-body-md text-on-surface-variant">
+                Lihat bagaimana standar presisi, material tahan lembab, dan kerapian instalasi kami diwujudkan langsung di hunian klien.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-space-sm sm:gap-gutter-desktop lg:grid-cols-4">
+              {featuredProjects.map((proj) => (
+                <ProjectCard
+                  key={proj.slug}
+                  project={proj}
+                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 50vw"
+                />
+              ))}
+            </div>
+
+            <div className="mt-space-2xl text-center">
+              <Link
+                href="/portfolio"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-primary px-8 text-label-lg font-semibold text-on-primary shadow-hairline transition-all hover:bg-primary-hover active:translate-y-px"
+              >
+                <span>Lihat Semua Portofolio</span>
+                <ArrowRight aria-hidden className="size-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       {others.length > 0 ? (
         <section className="border-t border-border-hairline bg-surface-container-low py-space-4xl">
           <div className="container-editorial">
-            <h2 className="mb-space-xl text-headline-md-mobile text-on-surface lg:text-headline-md">
-              Panduan lainnya
-            </h2>
-            <ul className="grid gap-gutter-desktop md:grid-cols-3">
-              {others.map((item) => (
-                <li key={item.slug}>
-                  <Link
-                    href={`/knowledge/${item.slug}`}
-                    className="group block h-full space-y-space-sm rounded-md bg-surface-container-lowest p-space-lg shadow-hairline transition-shadow hover:shadow-panel"
-                  >
-                    <Eyebrow>{item.category}</Eyebrow>
-                    <h3 className="text-headline-sm font-semibold leading-snug text-on-surface transition-colors group-hover:text-primary">
-                      {item.title}
-                    </h3>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <div className="mb-space-2xl space-y-space-2xs text-center sm:text-left">
+              <Eyebrow>Wawasan Terkait</Eyebrow>
+              <h2 className="text-headline-md-mobile text-on-surface lg:text-headline-md">
+                Panduan lainnya
+              </h2>
+              <p className="max-w-2xl text-body-md text-on-surface-variant">
+                Pelajari tips perencanaan interior, perbandingan material, dan panduan teknis lainnya untuk hunian Anda.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-space-sm sm:gap-gutter-desktop lg:grid-cols-4">
+              {others.map((item) => {
+                const thumb = getArticleThumbnail(item);
+                return (
+                  <article key={item.slug} className="flex h-full">
+                    <Link
+                      href={`/knowledge/${item.slug}`}
+                      className="group flex h-full w-full flex-col overflow-hidden rounded-md border border-border-hairline bg-surface-container-lowest shadow-hairline transition-all hover:border-primary/40 hover:shadow-panel"
+                    >
+                      {/* Image Thumbnail */}
+                      <div className="relative aspect-[16/10] w-full overflow-hidden bg-surface-container-high">
+                        <img
+                          src={thumb.src}
+                          alt={thumb.alt}
+                          loading="lazy"
+                          decoding="async"
+                          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                        />
+                        <div className="absolute top-2 left-2">
+                          <span className="inline-flex items-center rounded-full bg-deep-black/75 px-2 py-0.5 text-[10px] sm:text-label-xs font-semibold text-pure-white backdrop-blur-xs">
+                            {item.category}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Content Info */}
+                      <div className="flex flex-1 flex-col justify-between p-space-sm sm:p-space-md">
+                        <div className="space-y-1 sm:space-y-1.5">
+                          <h3 className="line-clamp-2 text-xs sm:text-label-lg font-semibold leading-snug text-on-surface transition-colors group-hover:text-primary">
+                            {item.title}
+                          </h3>
+                          <p className="line-clamp-2 text-[11px] sm:text-body-sm leading-relaxed text-on-surface-variant">
+                            {item.summary}
+                          </p>
+                        </div>
+                        <div className="mt-space-sm flex items-center justify-between border-t border-border-hairline pt-space-xs text-[10px] sm:text-label-sm text-muted-gray">
+                          <span className="inline-flex items-center gap-1">
+                            <Clock aria-hidden className="size-3 sm:size-3.5" />
+                            {item.readingMinutes} mnt baca
+                          </span>
+                          <span className="inline-flex items-center gap-1 font-semibold text-on-surface transition-colors group-hover:text-primary">
+                            Baca
+                            <ArrowRight
+                              aria-hidden
+                              className="size-3 sm:size-3.5 transition-transform group-hover:translate-x-0.5"
+                            />
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  </article>
+                );
+              })}
+            </div>
+
+            <div className="mt-space-2xl text-center">
+              <Link
+                href="/knowledge"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-border-hairline bg-surface-container-lowest px-8 text-label-lg font-semibold text-on-surface shadow-hairline transition-all hover:border-primary/50 hover:bg-surface-container active:translate-y-px"
+              >
+                <span>Panduan Lainnya</span>
+                <ArrowRight aria-hidden className="size-4" />
+              </Link>
+            </div>
           </div>
         </section>
       ) : null}

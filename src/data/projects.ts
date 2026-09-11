@@ -240,23 +240,27 @@ export const heroProject: Project =
 /**
  * The two frames beside the materials copy.
  *
- * Chosen for what they show rather than picked off the story spread: one flat
- * run of woodgrain HPL where the panel joints and edging are legible, and one
- * duco-finished front with its profile and hardware. Between them they carry
- * the two finishes that section actually claims.
- *
- * The archive holds no material or hardware photography - no plywood edge, no
- * hinge, no swatch - so these are the nearest true thing the studio has shot.
- * A stock swatch would illustrate the copy better and prove nothing.
+ * One frame showcases the dense export-grade multipleks (plywood) layers,
+ * green HMR (High Moisture Resistance) moisture-proof core, and clean ABS machine edging.
+ * The second frame showcases high-precision stainless steel slow-motion hydraulic
+ * soft-close hinge and undermount soft-close drawer slide with satin finish.
  */
-const MATERIAL_FRAMES = [
-  "/images/portfolio/lemari-bawah-tangga/ibu-asih-bojongsoang-01.webp",
-  "/images/portfolio/lemari-bawah-tangga/herna-batujajar-01.webp",
-] as const;
-
-export const materialImages: ProjectImage[] = MATERIAL_FRAMES.map((src) =>
-  projects.flatMap((project) => project.gallery).find((image) => image.src === src)
-).filter((image): image is ProjectImage => Boolean(image));
+export const materialImages: ProjectImage[] = [
+  {
+    src: "/images/materials/plywood-hmr-substrat.webp",
+    alt: "Substrat multipleks padat dan papan HMR hijau tahan lembab dengan edging mesin ABS",
+    width: 896,
+    height: 1200,
+    orientation: "portrait",
+  },
+  {
+    src: "/images/materials/engsel-slowmotion-hardware.webp",
+    alt: "Hardware engsel slow-motion hidrolik soft-close dan rel laci undermount",
+    width: 896,
+    height: 1200,
+    orientation: "portrait",
+  },
+];
 
 /**
  * The frames the homepage hero cross-dissolves between.

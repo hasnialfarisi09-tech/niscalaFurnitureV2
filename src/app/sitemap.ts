@@ -7,6 +7,7 @@ import {
   portfolioUpdatedAt,
   projects,
 } from "@/data/projects";
+import { serviceAreas } from "@/data/service-areas";
 import { site } from "@/lib/site";
 
 /**
@@ -125,8 +126,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
+  const serviceAreaRoutes: MetadataRoute.Sitemap = serviceAreas.map((area) => ({
+    url: `${site.url}/services/${area.slug}`,
+    lastModified: staticDate,
+    changeFrequency: "monthly",
+    priority: 0.85,
+  }));
+
   return [
     ...staticRoutes,
+    ...serviceAreaRoutes,
     ...categoryRoutes,
     ...projectRoutes,
     ...articleRoutes,

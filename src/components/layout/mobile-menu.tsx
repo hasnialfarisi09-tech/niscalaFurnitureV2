@@ -1,7 +1,7 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -20,6 +20,17 @@ import { WhatsAppCta } from "@/components/ui/whatsapp-cta";
 export function MobileMenu({ inverse = false }: { inverse?: boolean }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const activeParent = navLinks.find(
+    (link) => link.children && isActivePath(pathname, link.href)
+  );
+  const [expandedSection, setExpandedSection] = useState<string | null>(
+    activeParent ? activeParent.label : null
+  );
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    setExpandedSection(activeParent ? activeParent.label : null);
+  }
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -37,7 +48,7 @@ export function MobileMenu({ inverse = false }: { inverse?: boolean }) {
 
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[60] bg-deep-black/40 backdrop-blur-sm data-[state=open]:animate-overlay-in data-[state=closed]:animate-overlay-out" />
-        <Dialog.Content className="fixed left-space-md right-space-md top-space-md z-[70] origin-top rounded-lg border border-border-hairline bg-surface/95 p-space-lg shadow-panel backdrop-blur-xl data-[state=open]:animate-menu-in data-[state=closed]:animate-menu-out focus:outline-none">
+        <Dialog.Content className="fixed left-space-md right-space-md top-space-md z-[70] max-h-[85vh] origin-top overflow-y-auto rounded-lg border border-border-hairline bg-surface/95 p-space-lg shadow-panel backdrop-blur-xl data-[state=open]:animate-menu-in data-[state=closed]:animate-menu-out focus:outline-none">
           <Dialog.Title className="sr-only">Menu navigasi</Dialog.Title>
           <Dialog.Description className="sr-only">
             Tautan ke seluruh halaman Niscala Furniture.
@@ -58,7 +69,78 @@ export function MobileMenu({ inverse = false }: { inverse?: boolean }) {
           <nav className="mt-space-lg">
             <ul className="space-y-space-2xs">
               {navLinks.map((link) => {
+                const hasChildren = Boolean(link.children && link.children.length > 0);
                 const active = isActivePath(pathname, link.href);
+                const isExpanded = expandedSection === link.label;
+
+                if (hasChildren && link.children) {
+                  return (
+                    <li key={link.href} className="space-y-1">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setExpandedSection(isExpanded ? null : link.label)
+                        }
+                        aria-expanded={isExpanded}
+                        className={cn(
+                          "flex w-full items-center justify-between rounded-md px-space-md py-space-sm text-label-lg transition-[background-color,color,translate] duration-200 active:translate-y-px",
+                          active
+                            ? "bg-surface-container-lowest font-semibold text-on-surface shadow-hairline"
+                            : "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface"
+                        )}
+                      >
+                        <span>{link.label}</span>
+                        <div className="flex items-center gap-2">
+                          {active && !isExpanded ? (
+                            <span
+                              aria-hidden
+                              className="size-2 rounded-xs bg-primary-container"
+                            />
+                          ) : null}
+                          <ChevronDown
+                            aria-hidden
+                            className={cn(
+                              "size-4 text-muted-gray transition-transform duration-200",
+                              isExpanded && "rotate-180 text-on-surface"
+                            )}
+                          />
+                        </div>
+                      </button>
+
+                      {isExpanded && (
+                        <ul className="my-1 ml-3 space-y-0.5 border-l-2 border-primary-container/40 pl-3">
+                          {link.children.map((child) => {
+                            const childActive = pathname === child.href;
+                            return (
+                              <li key={child.href}>
+                                <Link
+                                  href={child.href}
+                                  aria-current={childActive ? "page" : undefined}
+                                  onClick={() => setOpen(false)}
+                                  className={cn(
+                                    "flex items-center justify-between rounded-md px-3 py-2 text-label-md transition-[background-color,color] duration-150",
+                                    childActive
+                                      ? "bg-surface-container-lowest font-semibold text-primary shadow-hairline"
+                                      : "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface"
+                                  )}
+                                >
+                                  <span>{child.label}</span>
+                                  {childActive ? (
+                                    <span
+                                      aria-hidden
+                                      className="size-1.5 rounded-full bg-primary-container"
+                                    />
+                                  ) : null}
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+                    </li>
+                  );
+                }
+
                 return (
                   <li key={link.href}>
                     <Link

@@ -37,7 +37,6 @@ import {
   extractYouTubeVideoId,
 } from "@/lib/article-utils";
 import { uploadArticleImageAction } from "@/app/actions/admin-articles";
-import type { KnowledgeBlock } from "@/types";
 
 type Props = {
   value: string;
@@ -329,7 +328,7 @@ export function ArticleMarkdownEditor({
           setIsUploadingImage(false);
           return;
         }
-      } catch (err) {
+      } catch {
         if (filePreview) {
           finalSrc = filePreview;
         } else {

@@ -225,12 +225,12 @@ export default async function ProjectPage(props: PageProps<"/portfolio/[slug]">)
                 />
               </Link>
             </div>
-            <ul className="grid gap-gutter-desktop sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="grid grid-cols-2 gap-space-sm sm:gap-gutter-desktop lg:grid-cols-3">
               {related.map((item) => (
                 <li key={item.slug}>
                   <ProjectCard
                     project={item}
-                    sizes="(min-width: 1024px) 30vw, (min-width: 640px) 46vw, 92vw"
+                    sizes="(min-width: 1024px) 30vw, (min-width: 640px) 46vw, 50vw"
                   />
                 </li>
               ))}

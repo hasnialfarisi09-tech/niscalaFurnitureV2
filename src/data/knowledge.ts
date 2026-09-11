@@ -24,6 +24,12 @@ export const knowledgeArticles: KnowledgeArticle[] = [
         type: "paragraph",
         text: "Bagian termahal dari sebuah custom furniture justru yang tidak terlihat: papan yang menjadi badan lemari. Finishing bisa diganti bertahun-tahun kemudian, tetapi kalau papannya salah pilih, kerusakan dimulai dari dalam dan tidak bisa diperbaiki tanpa membongkar seluruh modul.",
       },
+      {
+        type: "image",
+        src: "/images/portfolio/kitchen-set/semi-classic-01.webp",
+        alt: "Material papan HMR dan plywood berkualitas pada custom kitchen set",
+        caption: "Pemilihan substrat kayu olahan HMR hijau tahan lembab untuk daya tahan puluhan tahun.",
+      },
       { type: "heading", text: "Plywood (multipleks)" },
       {
         type: "paragraph",

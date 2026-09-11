@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 
 import { PageHeader } from "@/components/layout/page-header";
 import { Reveal } from "@/components/motion/reveal";
@@ -9,6 +9,7 @@ import { Eyebrow } from "@/components/ui/typography";
 import { WhatsAppCta } from "@/components/ui/whatsapp-cta";
 import { services } from "@/data/content";
 import { getProjectsByCategory } from "@/data/projects";
+import { serviceAreas } from "@/data/service-areas";
 import {
   ORGANISATION_ID,
   absoluteUrl,
@@ -69,10 +70,53 @@ export default function ServicesPage() {
       />
 
       <PageHeader
-        eyebrow="Lingkup layanan"
+        eyebrow="Layanan Area & Lingkup Pekerjaan"
         title="Satu ruang atau satu rumah, dirancang sesuai kebutuhan Anda."
         lead="Setiap layanan di bawah ini dikerjakan dengan alur yang sama: survey aktual, desain terukur, produksi di workshop sendiri, lalu pemasangan oleh tim kami."
       />
+
+      {/* Service Areas Navigation */}
+      <section className="border-b border-border-hairline bg-surface-container-low py-space-2xl">
+        <div className="container-editorial">
+          <div className="mb-space-md space-y-1">
+            <Eyebrow>Pilih Area Layanan</Eyebrow>
+            <h2 className="text-headline-sm font-semibold text-on-surface">
+              Wilayah Jangkauan Survey & Pemasangan
+            </h2>
+          </div>
+          <div className="grid gap-space-sm sm:grid-cols-2 lg:grid-cols-3">
+            {serviceAreas.map((area) => (
+              <Link
+                key={area.slug}
+                href={`/services/${area.slug}`}
+                className="group flex flex-col justify-between rounded-md border border-border-hairline bg-surface-container-lowest p-space-md shadow-hairline transition-all hover:border-primary hover:shadow-panel"
+              >
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1 text-label-xs font-semibold uppercase tracking-wider text-primary">
+                      <MapPin aria-hidden className="size-3" />
+                      {area.city}
+                    </span>
+                    <ArrowRight
+                      aria-hidden
+                      className="size-4 text-muted-gray transition-transform group-hover:translate-x-1 group-hover:text-primary"
+                    />
+                  </div>
+                  <h3 className="mt-1 text-label-lg font-semibold text-on-surface group-hover:text-primary transition-colors">
+                    {area.name}
+                  </h3>
+                  <p className="mt-1 line-clamp-2 text-body-xs text-on-surface-variant">
+                    {area.lead}
+                  </p>
+                </div>
+                <div className="mt-3 flex items-center gap-1 text-label-xs font-medium text-primary">
+                  Lihat artikel & info area &rarr;
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <div className="bg-surface">
         {services.map((service, index) => {

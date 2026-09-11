@@ -16,13 +16,13 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
   return (
     <RevealGroup
       as="ul"
-      className="grid gap-gutter-desktop sm:grid-cols-2 lg:grid-cols-3"
+      className="grid grid-cols-2 gap-space-sm sm:gap-gutter-desktop lg:grid-cols-3"
     >
       {projects.map((project, index) => (
         <RevealItem as="li" key={project.slug}>
           <ProjectCard
             project={project}
-            sizes="(min-width: 1024px) 30vw, (min-width: 640px) 46vw, 92vw"
+            sizes="(min-width: 1024px) 30vw, (min-width: 640px) 46vw, 50vw"
             /*
               One high-priority image, not three. Marking the whole first row
               high makes the browser split its bandwidth between them, which
