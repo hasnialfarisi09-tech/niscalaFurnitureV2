@@ -1,15 +1,17 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
 
-import { Eyebrow } from "@/components/ui/typography";
+import { arrowRowClasses, Eyebrow, TextLink } from "@/components/ui/typography";
 import { ProjectCard } from "@/components/ui/project-card";
+import { CoverImage } from "@/components/ui/cover-image";
 import { WhatsAppCta } from "@/components/ui/whatsapp-cta";
 import { FormattedText } from "@/components/ui/formatted-text";
 import {
   articleSeoTitle,
 } from "@/data/knowledge";
-import { projects } from "@/data/projects";
+import { projects, publishedImageSizes } from "@/data/projects";
 import { getAllArticles, getArticleBySlug } from "@/lib/articles";
 import {
   ORGANISATION_ID,
@@ -20,6 +22,7 @@ import {
   jsonLdScript,
   webPageJsonLd,
 } from "@/lib/seo";
+import { cn } from "@/lib/cn";
 import { site } from "@/lib/site";
 import type { KnowledgeArticle } from "@/types";
 
@@ -83,6 +86,15 @@ function articleGraph(article: KnowledgeArticle) {
       // dateModified that tracks the build would be a freshness claim the
       // content does not back up.
       ...(article.updatedAt ? { dateModified: article.updatedAt } : {}),
+      // `coverImage` can already be a full URL (a pasted external link) or a
+      // site-relative upload path - only the second kind needs `absoluteUrl`.
+      ...(article.coverImage
+        ? {
+            image: /^https?:\/\//.test(article.coverImage)
+              ? article.coverImage
+              : absoluteUrl(article.coverImage),
+          }
+        : {}),
       wordCount: countWords(article),
       timeRequired: `PT${article.readingMinutes}M`,
       inLanguage: "id-ID",
@@ -125,45 +137,6 @@ function countWords(article: KnowledgeArticle): number {
   return text.split(/\s+/).filter(Boolean).length;
 }
 
-/**
- * Returns thumbnail image for an article.
- * Prioritizes the first image block in the article body, then falls back to contextual photography.
- */
-function getArticleThumbnail(art: KnowledgeArticle): { src: string; alt: string } {
-  const imageBlock = art.body.find(
-    (b): b is { type: "image"; src: string; alt: string; caption?: string } =>
-      b.type === "image" && Boolean(b.src)
-  );
-
-  if (imageBlock?.src) {
-    return {
-      src: imageBlock.src,
-      alt: imageBlock.alt || art.title,
-    };
-  }
-
-  const text = `${art.slug} ${art.category} ${art.title}`.toLowerCase();
-  if (text.includes("kitchen") || text.includes("dapur") || text.includes("masak")) {
-    return { src: "/images/portfolio/kitchen-set/modern-01.webp", alt: art.title };
-  }
-  if (text.includes("wardrobe") || text.includes("lemari") || text.includes("closet") || text.includes("pakaian")) {
-    return { src: "/images/portfolio/wardrobe/wardrobe-2024-07-01.webp", alt: art.title };
-  }
-  if (text.includes("tangga") || text.includes("gudang")) {
-    return { src: "/images/portfolio/lemari-bawah-tangga/andri-padalarang-01.webp", alt: art.title };
-  }
-  if (text.includes("apartemen") || text.includes("studio")) {
-    return { src: "/images/portfolio/apartemen/ibu-finta-jakarta-selatan-01.webp", alt: art.title };
-  }
-  if (text.includes("tv") || text.includes("backdrop") || text.includes("living") || text.includes("keluarga")) {
-    return { src: "/images/portfolio/tv-backdrop/tv-backdrop-01.webp", alt: art.title };
-  }
-  if (text.includes("kerja") || text.includes("meja") || text.includes("kamar") || text.includes("bedroom")) {
-    return { src: "/images/portfolio/bedroom/bedroom-02.webp", alt: art.title };
-  }
-
-  return { src: "/images/portfolio/before-after/before-after-01.webp", alt: art.title };
-}
 
 export default async function ArticlePage(props: PageProps<"/knowledge/[slug]">) {
   const { slug } = await props.params;
@@ -212,7 +185,7 @@ export default async function ArticlePage(props: PageProps<"/knowledge/[slug]">)
         <div className="container-editorial">
           <Link
             href="/knowledge"
-            className="group inline-flex items-center gap-space-2xs text-label-md font-semibold text-on-surface-variant transition-colors hover:text-on-surface"
+            className={cn(arrowRowClasses, "text-on-surface-variant hover:text-on-surface")}
           >
             <ArrowLeft
               aria-hidden
@@ -221,7 +194,9 @@ export default async function ArticlePage(props: PageProps<"/knowledge/[slug]">)
             Semua panduan
           </Link>
 
-          <header className="mx-auto mt-space-lg max-w-3xl space-y-space-sm">
+          <div className="mt-space-lg grid gap-x-gutter-desktop gap-y-space-3xl lg:grid-cols-12">
+          <div className="lg:col-span-8">
+          <header className="max-w-3xl space-y-space-sm">
             <Eyebrow>{article.category}</Eyebrow>
             <h1 className="text-headline-lg-mobile text-on-surface lg:text-headline-lg">
               {article.title}
@@ -255,7 +230,17 @@ export default async function ArticlePage(props: PageProps<"/knowledge/[slug]">)
             </div>
           </header>
 
-          <div className="mx-auto mt-space-2xl max-w-3xl space-y-space-lg">
+          {article.coverImage ? (
+            <div className="relative mt-space-xl aspect-video w-full max-w-3xl overflow-hidden rounded-lg shadow-hairline">
+              <CoverImage
+                src={article.coverImage}
+                alt={article.coverImageAlt || article.title}
+                sizes="(min-width: 48rem) 768px, 92vw"
+              />
+            </div>
+          ) : null}
+
+          <div className="mt-space-2xl max-w-3xl space-y-space-lg">
             {article.body.map((block, index) => {
               switch (block.type) {
                 case "heading":
@@ -307,15 +292,48 @@ export default async function ArticlePage(props: PageProps<"/knowledge/[slug]">)
                       </p>
                     </aside>
                   );
-                case "image":
+                case "image": {
+                  /*
+                    Two kinds of image reach this block and they need different
+                    handling.
+
+                    A path the pipeline published has pre-rendered variants and
+                    known dimensions, so it goes through next/image and the
+                    reader gets a file sized for their screen. The className is
+                    unchanged from the plain <img> it replaces, so the layout is
+                    identical - next/image with explicit width and height adds
+                    no positioning styles of its own.
+
+                    An upload or a pasted remote URL has neither variants nor
+                    recorded dimensions. next/image would emit a srcset of
+                    identical URLs through the pass-through loader, or need
+                    `unoptimized`, which makes it a wrapper around the <img>
+                    below with nothing gained. Uploads are already resized to
+                    1600px WebP at upload time, which is the part that actually
+                    mattered.
+                  */
+                  const published = publishedImageSizes.get(block.src);
+
                   return (
                     <figure key={index} className="my-space-xl space-y-2">
-                      <img
-                        src={block.src}
-                        alt={block.alt || "Gambar panduan Niscala"}
-                        className="w-full rounded-xl object-cover shadow-sm max-h-[520px] bg-surface-container-low"
-                        loading="lazy"
-                      />
+                      {published ? (
+                        <Image
+                          src={block.src}
+                          alt={block.alt || "Gambar panduan Niscala"}
+                          width={published.width}
+                          height={published.height}
+                          sizes="(min-width: 48rem) 768px, 92vw"
+                          className="w-full rounded-xl object-cover shadow-sm max-h-[520px] bg-surface-container-low"
+                        />
+                      ) : (
+                        // eslint-disable-next-line @next/next/no-img-element -- No variants and no known dimensions; see the note above.
+                        <img
+                          src={block.src}
+                          alt={block.alt || "Gambar panduan Niscala"}
+                          className="w-full rounded-xl object-cover shadow-sm max-h-[520px] bg-surface-container-low"
+                          loading="lazy"
+                        />
+                      )}
                       {block.caption ? (
                         <figcaption className="text-center text-label-sm text-muted-gray">
                           {block.caption}
@@ -323,6 +341,7 @@ export default async function ArticlePage(props: PageProps<"/knowledge/[slug]">)
                       ) : null}
                     </figure>
                   );
+                }
                 case "video": {
                   const videoId =
                     block.videoId ||
@@ -361,7 +380,7 @@ export default async function ArticlePage(props: PageProps<"/knowledge/[slug]">)
             })}
           </div>
 
-          <div className="mx-auto mt-space-3xl max-w-3xl rounded-md bg-surface-container-low p-space-xl">
+          <div className="mt-space-3xl max-w-3xl rounded-md bg-surface-container-low p-space-xl">
             <div className="flex flex-col items-start justify-between gap-space-md sm:flex-row sm:items-center">
               <div className="space-y-1">
                 <p className="text-headline-sm font-semibold text-on-surface">
@@ -380,6 +399,61 @@ export default async function ArticlePage(props: PageProps<"/knowledge/[slug]">)
                 Tanya Tim Teknis
               </WhatsAppCta>
             </div>
+          </div>
+          </div>
+
+          {others.length > 0 ? (
+            <aside className="lg:col-span-4">
+              {/*
+                Sticky rather than scrolling away with the article: a reader
+                three screens deep in "Ergonomi Dapur" is exactly the reader
+                who wants "Panduan lainnya" still in view, not left behind at
+                the top of a long piece.
+              */}
+              <div className="space-y-space-md lg:sticky lg:top-24">
+                <h2 className="text-headline-sm font-semibold text-on-surface">
+                  Panduan Lainnya
+                </h2>
+                <ul className="space-y-space-sm">
+                  {others.slice(0, 4).map((item) => (
+                    <li key={item.slug}>
+                      <Link
+                        href={`/knowledge/${item.slug}`}
+                        className="group flex gap-space-sm rounded-md p-space-2xs transition-colors hover:bg-surface-container-low"
+                      >
+                        {item.coverImage ? (
+                          <div className="relative aspect-square w-16 shrink-0 overflow-hidden rounded-md bg-surface-container-high sm:w-20">
+                            <CoverImage
+                              src={item.coverImage}
+                              alt={item.coverImageAlt || item.title}
+                              sizes="80px"
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex aspect-square w-16 shrink-0 items-center justify-center rounded-md bg-surface-container-high text-muted-gray sm:w-20">
+                            <Clock aria-hidden className="size-5" />
+                          </div>
+                        )}
+                        <div className="min-w-0 flex-1 space-y-0.5 py-0.5">
+                          <Eyebrow className="text-[10px]">{item.category}</Eyebrow>
+                          <h3 className="line-clamp-2 text-label-lg font-semibold leading-snug text-on-surface transition-colors group-hover:text-primary">
+                            {item.title}
+                          </h3>
+                          <span className="inline-flex items-center gap-1 text-[11px] text-muted-gray">
+                            <Clock aria-hidden className="size-3" />
+                            {item.readingMinutes} menit baca
+                          </span>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                {others.length > 4 ? (
+                  <TextLink href="/knowledge">Lihat Semua Panduan</TextLink>
+                ) : null}
+              </div>
+            </aside>
+          ) : null}
           </div>
         </div>
       </article>
@@ -414,87 +488,6 @@ export default async function ArticlePage(props: PageProps<"/knowledge/[slug]">)
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-primary px-8 text-label-lg font-semibold text-on-primary shadow-hairline transition-all hover:bg-primary-hover active:translate-y-px"
               >
                 <span>Lihat Semua Portofolio</span>
-                <ArrowRight aria-hidden className="size-4" />
-              </Link>
-            </div>
-          </div>
-        </section>
-      ) : null}
-
-      {others.length > 0 ? (
-        <section className="border-t border-border-hairline bg-surface-container-low py-space-4xl">
-          <div className="container-editorial">
-            <div className="mb-space-2xl space-y-space-2xs text-center sm:text-left">
-              <Eyebrow>Wawasan Terkait</Eyebrow>
-              <h2 className="text-headline-md-mobile text-on-surface lg:text-headline-md">
-                Panduan lainnya
-              </h2>
-              <p className="max-w-2xl text-body-md text-on-surface-variant">
-                Pelajari tips perencanaan interior, perbandingan material, dan panduan teknis lainnya untuk hunian Anda.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-space-sm sm:gap-gutter-desktop lg:grid-cols-4">
-              {others.map((item) => {
-                const thumb = getArticleThumbnail(item);
-                return (
-                  <article key={item.slug} className="flex h-full">
-                    <Link
-                      href={`/knowledge/${item.slug}`}
-                      className="group flex h-full w-full flex-col overflow-hidden rounded-md border border-border-hairline bg-surface-container-lowest shadow-hairline transition-all hover:border-primary/40 hover:shadow-panel"
-                    >
-                      {/* Image Thumbnail */}
-                      <div className="relative aspect-[16/10] w-full overflow-hidden bg-surface-container-high">
-                        <img
-                          src={thumb.src}
-                          alt={thumb.alt}
-                          loading="lazy"
-                          decoding="async"
-                          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                        />
-                        <div className="absolute top-2 left-2">
-                          <span className="inline-flex items-center rounded-full bg-deep-black/75 px-2 py-0.5 text-[10px] sm:text-label-xs font-semibold text-pure-white backdrop-blur-xs">
-                            {item.category}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Content Info */}
-                      <div className="flex flex-1 flex-col justify-between p-space-sm sm:p-space-md">
-                        <div className="space-y-1 sm:space-y-1.5">
-                          <h3 className="line-clamp-2 text-xs sm:text-label-lg font-semibold leading-snug text-on-surface transition-colors group-hover:text-primary">
-                            {item.title}
-                          </h3>
-                          <p className="line-clamp-2 text-[11px] sm:text-body-sm leading-relaxed text-on-surface-variant">
-                            {item.summary}
-                          </p>
-                        </div>
-                        <div className="mt-space-sm flex items-center justify-between border-t border-border-hairline pt-space-xs text-[10px] sm:text-label-sm text-muted-gray">
-                          <span className="inline-flex items-center gap-1">
-                            <Clock aria-hidden className="size-3 sm:size-3.5" />
-                            {item.readingMinutes} mnt baca
-                          </span>
-                          <span className="inline-flex items-center gap-1 font-semibold text-on-surface transition-colors group-hover:text-primary">
-                            Baca
-                            <ArrowRight
-                              aria-hidden
-                              className="size-3 sm:size-3.5 transition-transform group-hover:translate-x-0.5"
-                            />
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  </article>
-                );
-              })}
-            </div>
-
-            <div className="mt-space-2xl text-center">
-              <Link
-                href="/knowledge"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-border-hairline bg-surface-container-lowest px-8 text-label-lg font-semibold text-on-surface shadow-hairline transition-all hover:border-primary/50 hover:bg-surface-container active:translate-y-px"
-              >
-                <span>Panduan Lainnya</span>
                 <ArrowRight aria-hidden className="size-4" />
               </Link>
             </div>
