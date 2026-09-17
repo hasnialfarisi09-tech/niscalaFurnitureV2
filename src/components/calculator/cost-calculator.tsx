@@ -1,9 +1,10 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
   Bed,
+  Check,
   ChevronDown,
   Info,
   Layers,
@@ -48,6 +49,29 @@ const ALL_ITEMS: FurnitureItemConfig[] = [
   ...ACCESSORIES_ITEMS,
 ];
 
+const CATEGORY_TABS = [
+  {
+    id: "kitchen" as const,
+    label: "Kitchen Set Custom",
+    icon: UtensilsCrossed,
+  },
+  {
+    id: "wardrobe" as const,
+    label: "Lemari & Partisi (M2)",
+    icon: Layers,
+  },
+  {
+    id: "living" as const,
+    label: "Backdrop TV & Wallpanel",
+    icon: Tv,
+  },
+  {
+    id: "bedroom" as const,
+    label: "Kamar Tidur (Dipan/Rias)",
+    icon: Bed,
+  },
+];
+
 function buildInitialState(): CalculatorState {
   const state: CalculatorState = {};
   for (const item of ALL_ITEMS) {
@@ -60,6 +84,103 @@ function buildInitialState(): CalculatorState {
     };
   }
   return state;
+}
+
+/** Reusable custom dropdown for single-level options (Provinsi & Kota) */
+function SimpleDropdown({
+  value,
+  options,
+  onChange,
+  className,
+}: {
+  value: string;
+  options: Array<{ id: string; name: string }>;
+  onChange: (newId: string) => void;
+  className?: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
+
+  const selectedOption = options.find((opt) => opt.id === value) ?? options[0];
+
+  return (
+    <div className={cn("relative", className)} ref={containerRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        className={cn(
+          "w-full flex items-center justify-between gap-2 text-left text-xs font-semibold rounded-xl border bg-surface-container-low px-3 py-2.5 text-on-surface shadow-2xs transition-all cursor-pointer",
+          isOpen
+            ? "border-primary ring-2 ring-primary/20 bg-surface"
+            : "border-border-hairline hover:border-primary/60 hover:bg-surface"
+        )}
+      >
+        <span className="truncate">{selectedOption?.name ?? "Pilih..."}</span>
+        <ChevronDown
+          className={cn(
+            "size-3.5 text-on-surface-variant transition-transform duration-200 shrink-0",
+            isOpen && "rotate-180 text-primary"
+          )}
+        />
+      </button>
+
+      {isOpen && (
+        <div
+          role="listbox"
+          className="absolute left-0 right-0 top-full mt-1.5 z-50 max-h-60 w-full overflow-y-auto rounded-xl border border-border-hairline bg-surface shadow-xl divide-y divide-border-hairline/40 focus:outline-none overscroll-contain"
+        >
+          {options.map((opt) => {
+            const isSelected = opt.id === value;
+            return (
+              <button
+                type="button"
+                role="option"
+                key={opt.id}
+                aria-selected={isSelected}
+                onClick={() => {
+                  onChange(opt.id);
+                  setIsOpen(false);
+                }}
+                className={cn(
+                  "w-full text-left px-3.5 py-2.5 text-xs transition-colors flex items-center justify-between gap-2 cursor-pointer",
+                  isSelected
+                    ? "bg-primary/10 text-primary font-bold"
+                    : "hover:bg-surface-container-low text-on-surface font-medium"
+                )}
+              >
+                <span className="truncate">{opt.name}</span>
+                {isSelected && <Check className="size-3.5 text-primary shrink-0" />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function CostCalculator() {
@@ -199,7 +320,11 @@ export function CostCalculator() {
       let measurement = 0;
       let subtotal = 0;
 
-      if (option.unit === "M1") {
+      if (item.id === "meja_island") {
+        measurement = len;
+        subtotal = len > 0 ? Math.round((len / 0.6) * unitPrice) : 0;
+        totalM1 += measurement;
+      } else if (option.unit === "M1") {
         measurement = len;
         subtotal = measurement * unitPrice;
         totalM1 += measurement;
@@ -239,11 +364,13 @@ export function CostCalculator() {
   const whatsAppUrl = useMemo(() => {
     const breakdownLines = calculationSummary.activeBreakdown.map((b, idx) => {
       const dimStr =
-        b.unit === "M1"
-          ? `${b.measurement} m1`
-          : b.unit === "M2"
-            ? `${b.measurement} m²`
-            : `${b.measurement} unit`;
+        b.item.id === "meja_island"
+          ? `(${b.measurement} m : 0,6)`
+          : b.unit === "M1"
+            ? `${b.measurement} m1`
+            : b.unit === "M2"
+              ? `${b.measurement} m²`
+              : `${b.measurement} unit`;
       return `${idx + 1}. ${b.item.name}\n   - Bahan: ${b.optionName} (${b.modelName})\n   - Ukuran: ${dimStr} x ${formatRupiah(b.unitPrice)} = ${formatRupiah(b.subtotal)}`;
     });
 
@@ -277,6 +404,32 @@ export function CostCalculator() {
     return OTHER_CATEGORIES.filter((item) => item.category === activeCategory);
   }, [activeCategory]);
 
+  // Compute selected count per category
+  const categoryCounts = useMemo(() => {
+    const counts: Record<"kitchen" | "wardrobe" | "living" | "bedroom", number> = {
+      kitchen: 0,
+      wardrobe: 0,
+      living: 0,
+      bedroom: 0,
+    };
+
+    for (const item of KITCHEN_ITEMS) {
+      if (itemsState[item.id]?.enabled) counts.kitchen += 1;
+    }
+    for (const item of ACCESSORIES_ITEMS) {
+      if (itemsState[item.id]?.enabled) counts.kitchen += 1;
+    }
+    for (const item of OTHER_CATEGORIES) {
+      if (itemsState[item.id]?.enabled) {
+        if (item.category === "wardrobe") counts.wardrobe += 1;
+        else if (item.category === "living") counts.living += 1;
+        else if (item.category === "bedroom") counts.bedroom += 1;
+      }
+    }
+
+    return counts;
+  }, [itemsState]);
+
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
       {/* Header Panel & Location Picker */}
@@ -306,56 +459,26 @@ export function CostCalculator() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {/* Province Select */}
               <div>
-                <label
-                  htmlFor="select-provinsi"
-                  className="block text-[11px] font-semibold text-on-surface-variant mb-1"
-                >
+                <label className="block text-[11px] font-semibold text-on-surface-variant mb-1">
                   Provinsi:
                 </label>
-                <div className="relative group">
-                  <select
-                    id="select-provinsi"
-                    value={selectedProvinceId}
-                    onChange={(e) => handleProvinceChange(e.target.value)}
-                    className="w-full appearance-none cursor-pointer text-xs font-medium rounded-xl border border-border-hairline bg-surface-container-low px-2.5 py-2 pr-7 text-on-surface hover:border-primary/60 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs transition-colors"
-                  >
-                    {PROVINCES_DATA.map((prov) => (
-                      <option key={prov.id} value={prov.id}>
-                        {prov.name}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-on-surface-variant group-hover:text-primary transition-colors">
-                    <ChevronDown className="size-3.5 shrink-0" />
-                  </div>
-                </div>
+                <SimpleDropdown
+                  value={selectedProvinceId}
+                  options={PROVINCES_DATA.map((prov) => ({ id: prov.id, name: prov.name }))}
+                  onChange={handleProvinceChange}
+                />
               </div>
 
               {/* City Select */}
               <div>
-                <label
-                  htmlFor="select-kota"
-                  className="block text-[11px] font-semibold text-on-surface-variant mb-1"
-                >
+                <label className="block text-[11px] font-semibold text-on-surface-variant mb-1">
                   Kota / Kabupaten:
                 </label>
-                <div className="relative group">
-                  <select
-                    id="select-kota"
-                    value={selectedCityId}
-                    onChange={(e) => setSelectedCityId(e.target.value)}
-                    className="w-full appearance-none cursor-pointer text-xs font-medium rounded-xl border border-border-hairline bg-surface-container-low px-2.5 py-2 pr-7 text-on-surface hover:border-primary/60 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs transition-colors"
-                  >
-                    {availableCities.map((city) => (
-                      <option key={city.id} value={city.id}>
-                        {city.name}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-on-surface-variant group-hover:text-primary transition-colors">
-                    <ChevronDown className="size-3.5 shrink-0" />
-                  </div>
-                </div>
+                <SimpleDropdown
+                  value={selectedCityId}
+                  options={availableCities.map((city) => ({ id: city.id, name: city.name }))}
+                  onChange={(newId) => setSelectedCityId(newId)}
+                />
               </div>
             </div>
           </div>
@@ -363,61 +486,57 @@ export function CostCalculator() {
 
         {/* Category Navigation Tabs */}
         <div className="mt-8 pt-6 border-t border-border-hairline flex flex-wrap gap-2 sm:gap-3">
-          <button
-            type="button"
-            onClick={() => setActiveCategory("kitchen")}
-            className={cn(
-              "flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all",
-              activeCategory === "kitchen"
-                ? "bg-primary text-white shadow-xs"
-                : "bg-surface text-on-surface-variant hover:bg-surface-container-high border border-border-hairline"
-            )}
-          >
-            <UtensilsCrossed className="size-4" />
-            <span>Kitchen Set Custom</span>
-          </button>
+          {CATEGORY_TABS.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeCategory === tab.id;
+            const count = categoryCounts[tab.id];
+            const hasSelected = count > 0;
 
-          <button
-            type="button"
-            onClick={() => setActiveCategory("wardrobe")}
-            className={cn(
-              "flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all",
-              activeCategory === "wardrobe"
-                ? "bg-primary text-white shadow-xs"
-                : "bg-surface text-on-surface-variant hover:bg-surface-container-high border border-border-hairline"
-            )}
-          >
-            <Layers className="size-4" />
-            <span>Lemari & Partisi (M2)</span>
-          </button>
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveCategory(tab.id)}
+                className={cn(
+                  "flex items-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer select-none",
+                  isActive
+                    ? "bg-primary text-white shadow-xs ring-1 ring-primary"
+                    : hasSelected
+                      ? "bg-surface text-on-surface border border-primary/40 shadow-2xs hover:bg-primary/5 ring-1 ring-primary/20 font-semibold"
+                      : "bg-surface text-on-surface-variant hover:bg-surface-container-high border border-border-hairline"
+                )}
+              >
+                <Icon
+                  className={cn(
+                    "size-4 shrink-0 transition-colors",
+                    isActive
+                      ? "text-white"
+                      : hasSelected
+                        ? "text-primary"
+                        : "text-on-surface-variant"
+                  )}
+                />
+                <span>{tab.label}</span>
 
-          <button
-            type="button"
-            onClick={() => setActiveCategory("living")}
-            className={cn(
-              "flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all",
-              activeCategory === "living"
-                ? "bg-primary text-white shadow-xs"
-                : "bg-surface text-on-surface-variant hover:bg-surface-container-high border border-border-hairline"
-            )}
-          >
-            <Tv className="size-4" />
-            <span>Backdrop TV & Wallpanel</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveCategory("bedroom")}
-            className={cn(
-              "flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all",
-              activeCategory === "bedroom"
-                ? "bg-primary text-white shadow-xs"
-                : "bg-surface text-on-surface-variant hover:bg-surface-container-high border border-border-hairline"
-            )}
-          >
-            <Bed className="size-4" />
-            <span>Kamar Tidur (Dipan/Rias)</span>
-          </button>
+                {hasSelected && (
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold leading-none shrink-0 transition-all",
+                      isActive
+                        ? "bg-white text-primary shadow-xs"
+                        : "bg-primary text-white shadow-xs"
+                    )}
+                  >
+                    <Check className="size-2.5 stroke-[3]" />
+                    <span>
+                      {count}
+                      <span className="hidden sm:inline"> item</span>
+                    </span>
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -609,11 +728,17 @@ export function CostCalculator() {
                       <div className="flex items-center justify-between text-[11px] text-on-surface-variant">
                         <span>{item.optionName}</span>
                         <span>
-                          {item.unit === "M1" && `${item.measurement} m1`}
-                          {item.unit === "M2" && `${item.measurement} m²`}
-                          {item.unit === "UNIT" && `${item.measurement} unit`}
-                          {" x "}
-                          {formatRupiah(item.unitPrice)}
+                          {item.item.id === "meja_island" ? (
+                            `(${item.measurement} m : 0,6) x ${formatRupiah(item.unitPrice)}`
+                          ) : (
+                            <>
+                              {item.unit === "M1" && `${item.measurement} m1`}
+                              {item.unit === "M2" && `${item.measurement} m²`}
+                              {item.unit === "UNIT" && `${item.measurement} unit`}
+                              {" x "}
+                              {formatRupiah(item.unitPrice)}
+                            </>
+                          )}
                         </span>
                       </div>
                     </div>
@@ -698,6 +823,30 @@ function ItemCard({
 }: ItemCardProps) {
   const isEnabled = state?.enabled ?? false;
   const selectId = useId();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isDropdownOpen) return;
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isDropdownOpen]);
 
   const selectedOption =
     item.options.find((opt) => opt.id === state?.optionId) ?? item.options[0];
@@ -713,7 +862,9 @@ function ItemCard({
     const ht = typeof state.height === "number" ? state.height : 0;
     const q = typeof state.qty === "number" ? state.qty : 0;
 
-    if (selectedOption.unit === "M1") {
+    if (item.id === "meja_island") {
+      subtotal = len > 0 ? Math.round((len / 0.6) * unitPrice) : 0;
+    } else if (selectedOption.unit === "M1") {
       subtotal = len * unitPrice;
     } else if (selectedOption.unit === "M2") {
       subtotal = len * ht * unitPrice;
@@ -722,10 +873,24 @@ function ItemCard({
     }
   }
 
+  const groupedOptions = useMemo(() => {
+    const groups: Array<{ groupName: string; options: typeof item.options }> = [];
+    for (const opt of item.options) {
+      const existing = groups.find((g) => g.groupName === opt.name);
+      if (existing) {
+        existing.options.push(opt);
+      } else {
+        groups.push({ groupName: opt.name, options: [opt] });
+      }
+    }
+    return groups;
+  }, [item]);
+
   return (
     <div
       className={cn(
         "rounded-2xl border transition-all duration-200",
+        isDropdownOpen && "relative z-30",
         isEnabled
           ? "bg-surface border-primary/40 shadow-xs ring-1 ring-primary/20"
           : "bg-surface-container-lowest border-border-hairline opacity-80 hover:opacity-100"
@@ -748,11 +913,13 @@ function ItemCard({
                 {item.name}
               </span>
               <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-surface-container text-on-surface-variant border border-border-hairline">
-                {item.defaultUnit === "M1"
-                  ? "Meter Lari (M1)"
-                  : item.defaultUnit === "M2"
-                    ? "Meter Persegi (M2)"
-                    : "Per Unit"}
+                {item.id === "meja_island"
+                  ? "Rumus Khusus: (P : 0,6) x Tarif"
+                  : item.defaultUnit === "M1"
+                    ? "Meter Lari (M1)"
+                    : item.defaultUnit === "M2"
+                      ? "Meter Persegi (M2)"
+                      : "Per Unit"}
               </span>
             </div>
             <p className="text-xs text-on-surface-variant mt-0.5 leading-relaxed">
@@ -782,35 +949,140 @@ function ItemCard({
             <div className="sm:col-span-7">
               <div className="flex items-center justify-between mb-1.5 gap-2">
                 <label
-                  htmlFor={selectId}
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="block text-xs font-semibold text-on-surface-variant cursor-pointer"
                 >
                   Pilihan Bahan Utama & Model:
                 </label>
                 {item.options.length > 1 && (
-                  <span className="text-[11px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="text-[11px] font-medium text-primary bg-primary/10 hover:bg-primary/20 px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0 transition-colors cursor-pointer"
+                  >
                     <span>{item.options.length} pilihan bahan</span>
-                    <ChevronDown className="size-3" />
-                  </span>
+                    <ChevronDown className={cn("size-3 transition-transform duration-200", isDropdownOpen && "rotate-180")} />
+                  </button>
                 )}
               </div>
-              <div className="relative group">
-                <select
+
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  type="button"
                   id={selectId}
-                  value={state?.optionId}
-                  onChange={(e) => onSelectOption(e.target.value)}
-                  className="w-full appearance-none cursor-pointer text-xs sm:text-sm rounded-xl border border-border-hairline bg-surface px-3 py-2.5 text-on-surface font-medium pr-10 hover:border-primary/60 hover:bg-surface-container-low/40 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs transition-colors"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  aria-expanded={isDropdownOpen}
+                  aria-haspopup="listbox"
+                  className={cn(
+                    "w-full text-left rounded-xl border bg-surface px-3.5 py-2.5 text-on-surface font-medium flex items-center justify-between gap-2 shadow-2xs transition-all cursor-pointer",
+                    isDropdownOpen
+                      ? "border-primary ring-2 ring-primary/20 bg-surface-container-lowest"
+                      : "border-border-hairline hover:border-primary/60 hover:bg-surface-container-low/40"
+                  )}
                   title="Klik untuk memilih bahan dan model"
                 >
-                  {item.options.map((opt) => (
-                    <option key={opt.id} value={opt.id}>
-                      {opt.name} — {opt.model} ({formatRupiah(region === "DK" ? opt.priceDK : opt.priceLK)} / {opt.unit})
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-on-surface-variant group-hover:text-primary transition-colors">
-                  <ChevronDown className="size-4 shrink-0" />
-                </div>
+                  <div className="min-w-0 flex-1">
+                    {selectedOption ? (
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 leading-tight">
+                        <span className="font-semibold text-xs sm:text-sm truncate">
+                          {selectedOption.name}{" "}
+                          <span className="text-on-surface-variant font-normal">— {selectedOption.model}</span>
+                        </span>
+                        <span className="text-[11px] sm:text-xs font-bold text-primary shrink-0 mt-0.5 sm:mt-0">
+                          ({formatRupiah(region === "DK" ? selectedOption.priceDK : selectedOption.priceLK)} / {selectedOption.unit})
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-on-surface-variant">Pilih bahan & model...</span>
+                    )}
+                  </div>
+                  <ChevronDown
+                    className={cn(
+                      "size-4 text-on-surface-variant transition-transform duration-200 shrink-0",
+                      isDropdownOpen && "rotate-180 text-primary"
+                    )}
+                  />
+                </button>
+
+                {/* Custom Responsive Dropdown Menu */}
+                {isDropdownOpen && (
+                  <div
+                    role="listbox"
+                    className="absolute left-0 right-0 top-full mt-1.5 z-50 max-h-72 sm:max-h-80 w-full overflow-y-auto rounded-2xl border border-border-hairline bg-surface shadow-2xl divide-y divide-border-hairline/40 focus:outline-none overscroll-contain"
+                  >
+                    {groupedOptions.map(({ groupName, options }) => {
+                      const showHeader = groupedOptions.length > 1;
+
+                      return (
+                        <div key={groupName} className="py-0.5">
+                          {showHeader && (
+                            <div className="px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-gray bg-surface-container-low/90 sticky top-0 backdrop-blur-md z-10 flex items-center justify-between border-b border-border-hairline/30 mb-0.5">
+                              <span>{groupName}</span>
+                              <span className="font-medium text-[10px] lowercase text-on-surface-variant/70">
+                                {options.length} model
+                              </span>
+                            </div>
+                          )}
+
+                          {options.map((opt) => {
+                            const isSelected = opt.id === state?.optionId;
+                            const price = region === "DK" ? opt.priceDK : opt.priceLK;
+
+                            return (
+                              <button
+                                type="button"
+                                role="option"
+                                key={opt.id}
+                                aria-selected={isSelected}
+                                onClick={() => {
+                                  onSelectOption(opt.id);
+                                  setIsDropdownOpen(false);
+                                }}
+                                className={cn(
+                                  "w-full text-left px-3.5 py-2.5 transition-colors flex items-center justify-between gap-3 cursor-pointer",
+                                  isSelected
+                                    ? "bg-primary/10 text-primary font-medium"
+                                    : "hover:bg-surface-container-low text-on-surface"
+                                )}
+                              >
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-xs sm:text-sm font-medium leading-snug">
+                                    <span
+                                      className={
+                                        isSelected
+                                          ? "font-bold text-primary"
+                                          : "text-on-surface font-semibold"
+                                      }
+                                    >
+                                      {opt.model}
+                                    </span>
+                                    {!showHeader && (
+                                      <span className="text-on-surface-variant font-normal text-[11px] sm:text-xs ml-1">
+                                        ({opt.name})
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-[11px] sm:text-xs font-bold text-primary mt-0.5">
+                                    {formatRupiah(price)}{" "}
+                                    <span className="font-normal text-on-surface-variant">
+                                      / {opt.unit}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {isSelected && (
+                                  <div className="size-5 rounded-full bg-primary flex items-center justify-center text-white shrink-0">
+                                    <Check className="size-3 stroke-[3]" />
+                                  </div>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -819,9 +1091,13 @@ function ItemCard({
               {item.defaultUnit === "M1" && (
                 <div>
                   <div className="flex items-center justify-between text-xs font-semibold text-on-surface-variant mb-1">
-                    <span>Panjang Bentang:</span>
+                    <span>{item.id === "meja_island" ? "Panjang Meja:" : "Panjang Bentang:"}</span>
                     <span className="text-primary font-bold">
-                      {state?.length ? `${state.length} Meter Lari (M1)` : "Belum diisi (0 M1)"}
+                      {state?.length
+                        ? item.id === "meja_island"
+                          ? `${state.length} m (${state.length} : 0,6)`
+                          : `${state.length} Meter Lari (M1)`
+                        : "Belum diisi (0 M1)"}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -856,6 +1132,14 @@ function ItemCard({
                       <Plus className="size-3.5" />
                     </button>
                   </div>
+                  {item.id === "meja_island" && (
+                    <div className="text-[11px] text-on-surface-variant mt-1.5 flex items-center justify-between">
+                      <span>Rumus workshop:</span>
+                      <span className="font-semibold text-primary">
+                        (Panjang : 0,6) &times; Tarif
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
 

@@ -410,7 +410,7 @@ export const KITCHEN_ITEMS: FurnitureItemConfig[] = [
     name: "Meja Island Kitchen",
     category: "kitchen",
     defaultUnit: "M1",
-    description: "Meja tengah dapur serbaguna untuk prep food, tempat kompor/sink tengah, atau meja sarapan.",
+    description: "Meja tengah dapur serbaguna. Rumus hitung khusus workshop: (Panjang : 0,6) x Tarif.",
     defaultSelected: false,
     defaultLength: 1.5,
     options: [

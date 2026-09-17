@@ -1,3 +1,4 @@
+import { Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { WhatsAppCta } from "@/components/ui/whatsapp-cta";
 import { HeroFrames } from "@/components/motion/hero-frames";
@@ -106,27 +107,28 @@ export function Hero() {
               button carries a 1px border the filled one does not, so side by
               side they stand 46px and 44px unless something makes them agree.
             */}
-            <div className="mt-space-md grid gap-space-sm sm:flex sm:flex-wrap sm:items-stretch sm:gap-space-md">
-              {/*
-                Narrower padding while the buttons are full width, the size's
-                own `px-space-xl` back once they size to their labels again.
-
-                Padding is what sets the width of an auto-width button and dead
-                weight on a stretched one, where it only eats into the room the
-                label has. At 320px it left 190px for a label needing 200, so
-                "Konsultasikan Ruangan Anda" wrapped and stood 64px against its
-                46px neighbour.
-              */}
+            <div className="mt-space-md grid gap-2.5 sm:flex sm:flex-wrap sm:items-stretch sm:gap-space-sm md:gap-space-md">
               <WhatsAppCta
                 source="hero"
-                className="px-space-md sm:px-space-xl"
+                size="sm"
+                className="px-space-md py-2.5 text-label-md sm:px-space-lg sm:py-3 sm:text-label-md md:text-label-lg transition-all shadow-[0_8px_24px_-8px_rgba(254,179,2,0.6)]"
               >
                 Konsultasikan Ruangan Anda
               </WhatsAppCta>
               <Button
+                href="/simulasi-biaya"
+                variant="outline-inverse"
+                size="sm"
+                className="group border-primary-container/40 bg-pure-white/10 px-space-md py-2.5 text-label-md text-inverse-on-surface backdrop-blur-md transition-all duration-200 hover:border-primary-container/80 hover:bg-primary-container/15 hover:shadow-[0_0_24px_-6px_rgba(254,179,2,0.35)] sm:px-space-lg sm:py-3 sm:text-label-md md:text-label-lg"
+              >
+                <Calculator className="size-4 text-primary-container transition-transform duration-200 group-hover:scale-110" />
+                <span>Simulasi Biaya</span>
+              </Button>
+              <Button
                 href="/portfolio"
                 variant="outline-inverse"
-                className="px-space-md sm:px-space-xl"
+                size="sm"
+                className="px-space-md py-2.5 text-label-md sm:px-space-lg sm:py-3 sm:text-label-md md:text-label-lg"
               >
                 Lihat Portofolio Proyek
               </Button>
