@@ -33,6 +33,7 @@ export const navLinks: readonly NavItem[] = [
     label: "Furniture Custom",
     children: customFurnitureNavLinks,
   },
+  { href: "/simulasi-biaya", label: "Simulasi Biaya" },
   {
     href: "/services",
     label: "Layanan Area",

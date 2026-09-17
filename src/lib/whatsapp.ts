@@ -20,7 +20,8 @@ export type WhatsAppSource =
   | "final_cta"
   | "footer"
   | "sticky_mobile"
-  | "contact";
+  | "contact"
+  | "calculator";
 
 /** Human-readable label per source, appended to the message for context. */
 const SOURCE_CONTEXT: Record<WhatsAppSource, string> = {
@@ -36,6 +37,7 @@ const SOURCE_CONTEXT: Record<WhatsAppSource, string> = {
   footer: "Footer",
   sticky_mobile: "Tombol cepat mobile",
   contact: "Halaman kontak",
+  calculator: "Kalkulator Simulasi Biaya",
 };
 
 const DEFAULT_MESSAGE = [
