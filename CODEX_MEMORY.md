@@ -28,10 +28,10 @@ peta yang salah lebih mahal daripada tidak ada peta.
 - `src/components/motion`: wrapper reveal, parallax, smooth scroll, page transition.
 - `src/components/portfolio`: grid, gallery, category filter.
 - `src/components/ui`: komponen dasar seperti button, typography, accordion, CTA, project card.
-- `src/components/calculator`: kalkulator estimasi biaya furniture custom (`cost-calculator.tsx`).
+- `src/components/calculator`: kalkulator estimasi biaya furniture custom (`cost-calculator.tsx`) dan simulator biaya cepat per-wilayah (`area-cost-simulator.tsx`).
 - `src/data/pricing-calculator.ts`: database tarif resmi workshop custom furniture untuk M1, M2, Unit, wilayah DK & LK.
 - `src/data/custom-furniture.ts`: koleksi kategori custom furniture (Kitchen Set, Lemari Custom, Lemari Bawah Tangga, Backdrop TV, Furniture Kamar) dengan >= 20 referensi desain per kategori, spesifikasi, dan lightbox viewer.
-- `src/data/service-areas.ts`: data 6 area layanan utama dan kategori artikel terkait (Bandung, Cimahi, Bandung Barat, Jakarta, Tangerang, Bekasi).
+- `src/data/service-areas.ts`: data 10 area layanan utama (Bandung, Cimahi, Bandung Barat, Jakarta, Bogor, Depok, Tangerang, Bekasi, Sumedang, Banten) dan kategori artikel terkait.
 - `src/data/public-reviews.json`: ulasan publik yang masuk via website (runtime persistence).
 - `src/lib/reviews.ts`: penyimpanan ulasan publik dan pembersihan email sebelum data dirender ke publik.
 - `src/lib/email.ts`: notifikasi email otomatis ulasan masuk ke `info@niscalafurniture.com` via SMTP / nodemailer.
@@ -58,7 +58,7 @@ peta yang salah lebih mahal daripada tidak ada peta.
 - `/furniture-custom/[slug]`: galeri referensi custom (kitchen-set, lemari-custom, lemari-bawah-tangga, backdrop-tv, furniture-kamar) dengan grid 2 kolom mobile, >= 20 gambar, dan interactive lightbox.
 - `/simulasi-biaya`: kalkulator simulasi perkiraan biaya furniture custom online transparan (M1, M2, Unit, DK/LK).
 - `/services`: halaman layanan dan ikhtisar jangkauan area.
-- `/services/[slug]`: halaman kategori layanan area (Bandung, Cimahi, Bandung Barat, Jakarta, Tangerang, Bekasi) terhubung ke artikel per area.
+- `/services/[slug]`: halaman kategori layanan area (10 wilayah: Bandung, Cimahi, Bandung Barat, Jakarta, Bogor, Depok, Tangerang, Bekasi, Sumedang, Banten) terhubung ke artikel per area.
 - `/knowledge`: listing artikel.
 - `/knowledge/[slug]`: detail artikel; slug dari `knowledgeArticles` di-overlay artikel custom.
 - `/admin`, `/admin/login`, `/admin/articles/**`: panel artikel, di balik login.

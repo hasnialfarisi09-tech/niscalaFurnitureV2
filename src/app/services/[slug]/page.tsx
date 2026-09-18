@@ -19,6 +19,9 @@ import {
   getServiceAreaBySlug,
   getAllServiceAreaSlugs,
 } from "@/data/service-areas";
+import { projects, featuredProjects } from "@/data/projects";
+import { ProjectCard } from "@/components/ui/project-card";
+import { AreaCostSimulator } from "@/components/calculator/area-cost-simulator";
 import { getAllArticles } from "@/lib/articles";
 import {
   ORGANISATION_ID,
@@ -66,15 +69,15 @@ function serviceAreaJsonLd(area: ReturnType<typeof getServiceAreaBySlug>) {
   return jsonLdGraph(
     webPageJsonLd({
       path: `/services/${area.slug}`,
-      name: area.name,
+      name: area.seoTitle,
       description: area.seoDescription,
       breadcrumb: true,
     }),
     {
       "@type": "Service",
       "@id": `${absoluteUrl(`/services/${area.slug}`)}#service`,
-      name: area.name,
-      serviceType: "Custom Furniture & Interior Design",
+      name: area.seoTitle,
+      serviceType: "Jasa Desain Interior & Furniture Custom",
       provider: { "@id": ORGANISATION_ID },
       areaServed: {
         "@type": "AdministrativeArea",
@@ -98,13 +101,34 @@ export default async function ServiceAreaPage({ params }: Props) {
     notFound();
   }
 
-  // Get articles published under this area category
+  // Get articles published under this area category (supports both new and legacy category naming)
   const allArticles = await getAllArticles();
-  const areaArticles = allArticles.filter(
-    (article) => article.category.trim().toLowerCase() === area.name.trim().toLowerCase()
-  );
+  const areaArticles = allArticles.filter((article) => {
+    const cat = article.category.trim().toLowerCase();
+    const areaName = area.name.trim().toLowerCase();
+    const city = area.city.trim().toLowerCase();
+    return (
+      cat === areaName ||
+      cat === `furniture custom ${city}` ||
+      cat === `interior & furniture custom ${city}` ||
+      cat === `interior ${city}`
+    );
+  });
 
   const otherAreas = serviceAreas.filter((item) => item.slug !== area.slug);
+
+  // Curated projects matching this service area (or fallback to top featured projects)
+  const cityMatches = projects.filter((p) => {
+    const loc = (p.location ?? "").toLowerCase();
+    const ven = (p.venue ?? "").toLowerCase();
+    const c = area.city.toLowerCase();
+    return loc.includes(c) || ven.includes(c);
+  });
+
+  const areaProjects = [
+    ...cityMatches,
+    ...featuredProjects.filter((p) => !cityMatches.some((m) => m.slug === p.slug)),
+  ].slice(0, 2);
 
   return (
     <>
@@ -119,10 +143,10 @@ export default async function ServiceAreaPage({ params }: Props) {
         lead={area.lead}
       />
 
-      {/* Area Highlights & Fast CTA */}
+      {/* Area Highlights, Fast CTA & Cost Simulator */}
       <section className="border-b border-border-hairline bg-surface py-space-3xl">
         <div className="container-editorial">
-          <div className="grid gap-gutter-desktop lg:grid-cols-12 lg:items-center">
+          <div className="grid gap-gutter-desktop lg:grid-cols-12 lg:items-start">
             <div className="space-y-space-md lg:col-span-7">
               <Eyebrow>Jangkauan & Keunggulan Layanan</Eyebrow>
               <h2 className="text-headline-sm font-semibold text-on-surface">
@@ -168,43 +192,80 @@ export default async function ServiceAreaPage({ params }: Props) {
                   Jadwalkan Survey
                 </Link>
               </div>
+
+              {/* Khusus Tampilan Desktop: Portofolio di Samping Kiri Kalkulator */}
+              <div className="hidden lg:block pt-space-md border-t border-border-hairline">
+                <div className="mb-space-sm flex items-end justify-between">
+                  <div>
+                    <span className="block text-label-xs font-semibold uppercase tracking-wider text-primary">
+                      Dokumentasi Hasil Jadi
+                    </span>
+                    <h3 className="text-label-md font-semibold text-on-surface">
+                      Portofolio Pengerjaan di {area.city} & Sekitarnya
+                    </h3>
+                  </div>
+                  <Link
+                    href="/portfolio"
+                    className="inline-flex items-center gap-1 text-label-xs font-semibold text-primary transition-colors hover:text-primary-hover"
+                  >
+                    <span>Semua Portofolio</span>
+                    <ArrowRight className="size-3" />
+                  </Link>
+                </div>
+
+                <div className="grid grid-cols-2 gap-space-sm">
+                  {areaProjects.map((project) => (
+                    <ProjectCard
+                      key={project.slug}
+                      project={project}
+                      sizes="(min-width: 1024px) 340px, 50vw"
+                      ratio="standard"
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* Value checklist card */}
-            <div className="rounded-lg border border-border-hairline bg-surface-container-lowest p-space-xl shadow-hairline lg:col-span-5">
-              <h3 className="text-label-lg font-semibold text-on-surface">
-                Standar Pengerjaan Niscala di {area.city}
-              </h3>
-              <ul className="mt-space-md space-y-space-sm text-body-sm text-on-surface-variant">
-                <li className="flex items-start gap-2.5">
-                  <CheckCircle2 aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
-                  <span>
-                    <strong className="text-on-surface">Survey aktual di lokasi:</strong>{" "}
-                    Pengukuran detail dinding, elevasi lantai, dan titik instalasi air/listrik.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <CheckCircle2 aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
-                  <span>
-                    <strong className="text-on-surface">Material tahan lembab:</strong> Standar
-                    High Moisture Resistance (HMR) untuk kitchen set dan area basah.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <CheckCircle2 aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
-                  <span>
-                    <strong className="text-on-surface">Workshop sendiri:</strong> Tanpa pihak ketiga,
-                    memastikan kualitas potongan presisi dan finishing rapi.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <CheckCircle2 aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
-                  <span>
-                    <strong className="text-on-surface">Pemasangan tim in-house:</strong> Instalasi
-                    bersih dan penyesuaian detail di tempat oleh tim terlatih.
-                  </span>
-                </li>
-              </ul>
+            {/* Right column: Value checklist card AND directly below it: Kartu Simulasi Biaya */}
+            <div className="space-y-space-lg lg:col-span-5">
+              <div className="rounded-lg border border-border-hairline bg-surface-container-lowest p-space-xl shadow-hairline">
+                <h3 className="text-label-lg font-semibold text-on-surface">
+                  Standar Pengerjaan Niscala di {area.city}
+                </h3>
+                <ul className="mt-space-md space-y-space-sm text-body-sm text-on-surface-variant">
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
+                    <span>
+                      <strong className="text-on-surface">Survey aktual di lokasi:</strong>{" "}
+                      Pengukuran detail dinding, elevasi lantai, dan titik instalasi air/listrik.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
+                    <span>
+                      <strong className="text-on-surface">Material tahan lembab:</strong> Standar
+                      High Moisture Resistance (HMR) untuk kitchen set dan area basah.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
+                    <span>
+                      <strong className="text-on-surface">Workshop sendiri:</strong> Tanpa pihak ketiga,
+                      memastikan kualitas potongan presisi dan finishing rapi.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
+                    <span>
+                      <strong className="text-on-surface">Pemasangan tim in-house:</strong> Instalasi
+                      bersih dan penyesuaian detail di tempat oleh tim terlatih.
+                    </span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Kartu Simulasi Biaya Simple & Elegan (langsung hitung di tempat) */}
+              <AreaCostSimulator city={area.city} />
             </div>
           </div>
         </div>

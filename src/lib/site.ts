@@ -58,12 +58,12 @@ const postalCode = optional(process.env.NEXT_PUBLIC_ADDRESS_POSTAL_CODE);
 export const site = {
   name: "Niscala Furniture",
   shortName: "Niscala",
-  tagline: "Produsen Interior Custom",
+  tagline: "Studio Desain Interior & Furniture Custom",
   description:
-    "Interior dan furniture custom yang dirancang berdasarkan ukuran ruang, kebutuhan, fungsi, dan karakter penggunanya. Dari konsultasi, survey, desain, produksi, hingga pemasangan.",
+    "Interior dan furniture custom yang dirancang berdasarkan ukuran ruang, kebutuhan, fungsi, dan karakter penggunanya di Bandung & Jabodetabek. Dari konsultasi, survey, desain, produksi workshop, hingga pemasangan.",
   /** Trimmed for SERP snippets, which cut off around 155-160 characters. */
   metaDescription:
-    "Interior & furniture custom dirancang dari ukuran ruang dan kebutuhan Anda. Satu tim menangani konsultasi, survey, desain, produksi, sampai pemasangan.",
+    "Jasa desain interior & furniture custom di Bandung & Jabodetabek. Survey aktual, desain 3D terukur, dan produksi workshop sendiri untuk hunian & kantor.",
   url: rawSiteUrl.replace(/\/+$/, ""),
   locale: "id-ID",
 

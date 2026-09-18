@@ -30,6 +30,16 @@ import {
 import type { KnowledgeArticle, KnowledgeBlock } from "@/types";
 
 const PRESET_CATEGORIES = [
+  "Interior & Furniture Custom Bandung",
+  "Interior & Furniture Custom Cimahi",
+  "Interior & Furniture Custom Bandung Barat",
+  "Interior & Furniture Custom Jakarta",
+  "Interior & Furniture Custom Bogor",
+  "Interior & Furniture Custom Depok",
+  "Interior & Furniture Custom Tangerang",
+  "Interior & Furniture Custom Bekasi",
+  "Interior & Furniture Custom Sumedang",
+  "Interior & Furniture Custom Banten",
   "Furniture Custom Bandung",
   "Furniture Custom Cimahi",
   "Furniture Custom Bandung Barat",

@@ -16,7 +16,10 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: site.shortName,
     description: site.description,
     start_url: "/",
+    id: "/",
+    scope: "/",
     display: "standalone",
+    orientation: "portrait",
     lang: "id-ID",
     background_color: "#fbf9f4",
     theme_color: "#feb302",
@@ -32,6 +35,12 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: "512x512",
         type: "image/png",
         purpose: "any",
+      },
+      {
+        src: "/logo/icon-512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
       },
     ],
   };

@@ -62,3 +62,12 @@ __pycache__/
 
 # Responsive image variants, rebuilt by `npm run prepare:variants`.
 public/v/
+
+# Android app build packages
+*.apk
+*.aab
+*.keystore
+*.zip
+/android-package/
+/android-signed-package/
+/android-admin-package/

@@ -19,12 +19,12 @@ export interface ServiceArea {
 export const serviceAreas: ServiceArea[] = [
   {
     slug: "furniture-custom-bandung",
-    name: "Furniture Custom Bandung",
+    name: "Interior & Furniture Custom Bandung",
     city: "Bandung",
-    seoTitle: "Jasa Pembuatan Furniture Custom Bandung",
-    headline: "Furniture custom presisi untuk hunian & ruang komersial di Bandung.",
-    lead: "Workshop langsung di Bandung dengan jangkauan survey ke seluruh Kota Bandung. Mulai dari kitchen set, lemari pakaian built-in, lemari bawah tangga, hingga interior ruang kerja.",
-    seoDescription: "Jasa kitchen set dan furniture custom di Bandung. Dikerjakan langsung di workshop sendiri dengan survey aktual, desain terukur, dan instalasi rapi.",
+    seoTitle: "Jasa Desain Interior & Furniture Custom Bandung",
+    headline: "Desain interior & furniture custom presisi untuk hunian di Bandung.",
+    lead: "Workshop langsung di Bandung dengan jangkauan survey ke seluruh Kota Bandung. Spesialis interior rumah, kitchen set tahan lembab, lemari pakaian built-in, lemari bawah tangga, hingga interior ruang kerja.",
+    seoDescription: "Jasa desain interior & furniture custom di Bandung. Kitchen set, backdrop TV, lemari pakaian, dan interior ruangan dikerjakan di workshop sendiri dengan survey aktual & presisi.",
     coverageAreas: [
       "Bandung Kota",
       "Dago & Setiabudi",
@@ -36,12 +36,12 @@ export const serviceAreas: ServiceArea[] = [
   },
   {
     slug: "furniture-custom-cimahi",
-    name: "Furniture Custom Cimahi",
+    name: "Interior & Furniture Custom Cimahi",
     city: "Cimahi",
-    seoTitle: "Jasa Pembuatan Furniture Custom Cimahi",
-    headline: "Layanan interior & furniture custom terdekat untuk area Cimahi.",
-    lead: "Survey langsung ke lokasi dan konsultasi tata letak di seluruh area Cimahi. Desain disesuaikan dengan dimensi aktual ruangan Anda dan diproduksi dengan material berkualitas.",
-    seoDescription: "Pembuatan furniture custom dan interior di Cimahi: kitchen set, backdrop TV, lemari pakaian, dan partisi ruangan dengan pengerjaan rapi.",
+    seoTitle: "Jasa Desain Interior & Furniture Custom Cimahi",
+    headline: "Layanan desain interior & furniture custom terdekat untuk area Cimahi.",
+    lead: "Survey langsung ke lokasi dan konsultasi tata letak di seluruh area Cimahi. Desain disesuaikan dengan dimensi aktual ruangan Anda dan diproduksi langsung dari workshop kami.",
+    seoDescription: "Jasa desain interior dan pembuatan furniture custom di Cimahi: kitchen set, backdrop TV, lemari pakaian, dan partisi ruangan dengan pengerjaan rapi bergaransi.",
     coverageAreas: [
       "Cimahi Utara",
       "Cimahi Tengah",
@@ -52,12 +52,12 @@ export const serviceAreas: ServiceArea[] = [
   },
   {
     slug: "furniture-custom-bandung-barat",
-    name: "Furniture Custom Bandung Barat",
+    name: "Interior & Furniture Custom Bandung Barat",
     city: "Bandung Barat",
-    seoTitle: "Jasa Pembuatan Furniture Custom Bandung Barat",
-    headline: "Solusi furniture custom untuk kawasan Bandung Barat & sekitarnya.",
-    lead: "Melayani pembuatan furniture custom untuk perumahan, vila, dan apartemen di Bandung Barat seperti Padalarang, Kotabaru Parahyangan, hingga Lembang.",
-    seoDescription: "Jasa custom furniture dan kitchen set di Bandung Barat: Kotabaru Parahyangan, Padalarang, Lembang, dan sekitarnya.",
+    seoTitle: "Jasa Desain Interior & Furniture Custom Bandung Barat",
+    headline: "Solusi desain interior & furniture custom kawasan Bandung Barat.",
+    lead: "Melayani pembuatan interior dan furniture custom untuk perumahan, vila, dan apartemen di Bandung Barat seperti Padalarang, Kotabaru Parahyangan, hingga Lembang.",
+    seoDescription: "Jasa interior dan furniture custom di Bandung Barat: Kotabaru Parahyangan, Padalarang, Lembang, dan sekitarnya. Material tahan lembab dan instalasi presisi.",
     coverageAreas: [
       "Kotabaru Parahyangan",
       "Padalarang",
@@ -68,12 +68,12 @@ export const serviceAreas: ServiceArea[] = [
   },
   {
     slug: "furniture-custom-jakarta",
-    name: "Furniture Custom Jakarta",
+    name: "Interior & Furniture Custom Jakarta",
     city: "Jakarta",
-    seoTitle: "Jasa Pembuatan Furniture Custom Jakarta",
-    headline: "Furniture custom berkualitas untuk rumah & apartemen di Jakarta.",
-    lead: "Tim Niscala Furniture melayani survey, pengiriman, dan pemasangan langsung di wilayah DKI Jakarta. Pilihan material tahan lembab (HMR), plywood pilihan, serta hardware awet.",
-    seoDescription: "Jasa furniture custom Jakarta: kitchen set apartemen/rumah, walk-in closet, meja kerja, dan backdrop TV dengan desain modern minimalis.",
+    seoTitle: "Jasa Desain Interior & Furniture Custom Jakarta",
+    headline: "Desain interior & furniture custom berkualitas untuk hunian di Jakarta.",
+    lead: "Tim Niscala Furniture melayani survey terukur, pengiriman aman, dan pemasangan langsung di wilayah DKI Jakarta. Pilihan material HMR tahan lembab, multipleks pilihan, dan finishing HPL/Duco premium.",
+    seoDescription: "Jasa desain interior & furniture custom Jakarta: kitchen set apartemen/rumah, walk-in closet, meja kerja, dan backdrop TV dengan desain modern minimalis.",
     coverageAreas: [
       "Jakarta Selatan",
       "Jakarta Barat",
@@ -83,13 +83,45 @@ export const serviceAreas: ServiceArea[] = [
     ],
   },
   {
+    slug: "furniture-custom-bogor",
+    name: "Interior & Furniture Custom Bogor",
+    city: "Bogor",
+    seoTitle: "Jasa Desain Interior & Furniture Custom Bogor",
+    headline: "Desain interior & furniture custom elegan untuk hunian di Bogor & Sentul.",
+    lead: "Layanan pembuatan interior rumah, villa, dan furniture custom presisi di wilayah Bogor Kota dan Kabupaten. Mulai dari kitchen set tahan lembab, lemari pakaian built-in, hingga backdrop TV.",
+    seoDescription: "Jasa desain interior & furniture custom Bogor: Sentul City, Cibinong, Pajajaran, dan sekitarnya. Survey aktual, desain 3D terukur, dan instalasi rapi bergaransi.",
+    coverageAreas: [
+      "Sentul City",
+      "Bogor Kota & Pajajaran",
+      "Cibinong & Bojonggede",
+      "Gunung Putri",
+      "Ciawi & Puncak",
+    ],
+  },
+  {
+    slug: "furniture-custom-depok",
+    name: "Interior & Furniture Custom Depok",
+    city: "Depok",
+    seoTitle: "Jasa Desain Interior & Furniture Custom Depok",
+    headline: "Spesialis desain interior & furniture custom hunian & apartemen di Depok.",
+    lead: "Mewujudkan interior idaman untuk rumah tinggal dan unit apartemen di area Depok. Tim kami siap survey lokasi untuk kitchen set, lemari pakaian, ruang kerja, dan interior ruangan lengkap.",
+    seoDescription: "Jasa desain interior dan furniture custom di Depok: Margonda, Cinere, Sawangan, Cimanggis. Pilihan material HMR tahan lembab dengan finishing HPL presisi.",
+    coverageAreas: [
+      "Margonda & Beji",
+      "Cinere & Gandul",
+      "Sawangan & Bojongsari",
+      "Cimanggis",
+      "Sukmajaya & Grand Depok City",
+    ],
+  },
+  {
     slug: "furniture-custom-tangerang",
-    name: "Furniture Custom Tangerang",
+    name: "Interior & Furniture Custom Tangerang",
     city: "Tangerang",
-    seoTitle: "Jasa Pembuatan Furniture Custom Tangerang & BSD",
-    headline: "Pembuatan furniture custom di Tangerang, BSD, & Gading Serpong.",
-    lead: "Pengerjaan furniture custom terukur untuk hunian baru maupun renovasi di wilayah Tangerang, Tangerang Selatan, BSD City, Bintaro, dan Alam Sutera.",
-    seoDescription: "Spesialis custom furniture Tangerang dan BSD: kitchen set elegan, lemari pakaian custom, kabinet bawah tangga, dan interior kamar tidur.",
+    seoTitle: "Jasa Desain Interior & Furniture Custom Tangerang & BSD",
+    headline: "Desain interior & custom furniture di Tangerang, BSD, & Gading Serpong.",
+    lead: "Pengerjaan interior dan furniture custom terukur untuk hunian baru maupun renovasi di wilayah Tangerang Kota, Tangerang Selatan, BSD City, Bintaro, dan Alam Sutera.",
+    seoDescription: "Spesialis desain interior & custom furniture Tangerang dan BSD: kitchen set elegan, lemari pakaian custom, kabinet bawah tangga, dan interior kamar tidur.",
     coverageAreas: [
       "BSD City & Serpong",
       "Gading Serpong",
@@ -100,12 +132,12 @@ export const serviceAreas: ServiceArea[] = [
   },
   {
     slug: "furniture-custom-bekasi",
-    name: "Furniture Custom Bekasi",
+    name: "Interior & Furniture Custom Bekasi",
     city: "Bekasi",
-    seoTitle: "Jasa Pembuatan Furniture Custom Bekasi",
-    headline: "Desain dan produksi furniture custom untuk kawasan Bekasi.",
-    lead: "Layanan konsultasi, survey presisi, dan instalasi furniture custom untuk rumah tinggal dan komersial di area Bekasi Barat, Bekasi Timur, hingga Grand Galaxy dan Harapan Indah.",
-    seoDescription: "Jasa kitchen set dan furniture custom Bekasi: kualitas pengerjaan rapi, finishing HPL/duco premium, dan garansi instalasi.",
+    seoTitle: "Jasa Desain Interior & Furniture Custom Bekasi",
+    headline: "Desain interior dan produksi furniture custom untuk kawasan Bekasi.",
+    lead: "Layanan konsultasi, survey presisi, dan instalasi interior untuk rumah tinggal dan komersial di area Bekasi Barat, Bekasi Timur, hingga Grand Galaxy dan Harapan Indah.",
+    seoDescription: "Jasa desain interior & furniture custom Bekasi: kitchen set rapi, lemari kamar, backdrop TV, finishing HPL/duco premium, dan garansi instalasi.",
     coverageAreas: [
       "Summarecon Bekasi",
       "Harapan Indah",
@@ -114,10 +146,46 @@ export const serviceAreas: ServiceArea[] = [
       "Tambun & Cikarang",
     ],
   },
+  {
+    slug: "furniture-custom-sumedang",
+    name: "Interior & Furniture Custom Sumedang",
+    city: "Sumedang",
+    seoTitle: "Jasa Desain Interior & Furniture Custom Sumedang",
+    headline: "Layanan desain interior & furniture custom di Sumedang & Jatinangor.",
+    lead: "Jarak dekat dari workshop Bandung memudahkan pengiriman dan survey cepat ke wilayah Sumedang. Melayani interior rumah tinggal, kos eksklusif, apartemen, hingga kantor.",
+    seoDescription: "Jasa desain interior & furniture custom di Sumedang dan Jatinangor. Pembuatan kitchen set, kamar tidur, meja belajar, dan lemari custom dengan harga transparan.",
+    coverageAreas: [
+      "Jatinangor",
+      "Sumedang Kota",
+      "Tanjungsari",
+      "Cimalaka",
+      "Darmaraja",
+    ],
+  },
+  {
+    slug: "furniture-custom-banten",
+    name: "Interior & Furniture Custom Banten",
+    city: "Banten",
+    seoTitle: "Jasa Desain Interior & Furniture Custom Banten",
+    headline: "Desain interior & furniture custom untuk wilayah Banten & sekitarnya.",
+    lead: "Melayani pengerjaan interior komprehensif untuk kawasan Serang, Cilegon, Tangerang Raya, dan seluruh provinsi Banten. Material awet, tata letak fungsional, dan pemasangan rapi.",
+    seoDescription: "Jasa desain interior dan furniture custom di Banten: Serang, Cilegon, Pandeglang, dan Tangerang Raya. Kitchen set, interior rumah, villa, dan kantor.",
+    coverageAreas: [
+      "Kota Serang",
+      "Kota Cilegon",
+      "Kabupaten Serang",
+      "Tangerang Raya",
+      "Rangkasbitung & Pandeglang",
+    ],
+  },
 ];
 
 export function getServiceAreaBySlug(slug: string): ServiceArea | undefined {
-  return serviceAreas.find((area) => area.slug === slug);
+  return serviceAreas.find(
+    (area) =>
+      area.slug === slug ||
+      area.slug === `furniture-custom-${slug.replace(/^interior-/, "")}`
+  );
 }
 
 export function getAllServiceAreaSlugs(): string[] {

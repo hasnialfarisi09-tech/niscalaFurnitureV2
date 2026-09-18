@@ -9,6 +9,7 @@ import { SocialLinks } from "@/components/layout/social-links";
 import { WhatsAppCta } from "@/components/ui/whatsapp-cta";
 import { site } from "@/lib/site";
 import { servedLocations } from "@/data/projects";
+import { serviceAreas } from "@/data/service-areas";
 
 /**
  * A row in one of the footer lists.
@@ -140,6 +141,29 @@ export function Footer() {
             . Melayani pemesanan dari seluruh Indonesia.
           </p>
         ) : null}
+
+        <div className="mt-space-md border-t border-border-hairline pt-space-md text-body-xs text-muted-gray">
+          <p className="text-label-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-space-2xs">
+            Layanan Desain Interior & Furniture Custom Wilayah:
+          </p>
+          <div className="flex flex-wrap items-center gap-x-space-sm gap-y-space-2xs leading-relaxed">
+            {serviceAreas.map((area, idx) => (
+              <span key={area.slug} className="inline-flex items-center gap-x-space-sm">
+                <Link
+                  href={`/services/${area.slug}`}
+                  className="transition-colors hover:text-primary"
+                >
+                  {area.name}
+                </Link>
+                {idx < serviceAreas.length - 1 ? (
+                  <span aria-hidden className="text-muted-gray/40">
+                    •
+                  </span>
+                ) : null}
+              </span>
+            ))}
+          </div>
+        </div>
 
         <div className="mt-space-lg flex flex-col items-center justify-between gap-space-sm text-body-sm text-muted-gray sm:flex-row">
           <p className="flex flex-wrap items-center gap-x-space-sm gap-y-space-2xs">

@@ -141,7 +141,7 @@ export function HeaderNav({ inverse = false }: HeaderNavProps) {
                 {isOpen && (
                   <div
                     className={cn(
-                      "absolute left-0 top-full z-50 mt-1.5 w-64 origin-top-left rounded-lg border p-1.5 shadow-panel backdrop-blur-xl focus:outline-none",
+                      "absolute left-0 top-full z-50 mt-1.5 w-72 origin-top-left rounded-lg border p-1.5 shadow-panel backdrop-blur-xl focus:outline-none",
                       inverse
                         ? "border-border-hairline-dark bg-deep-black/95 text-inverse-on-surface"
                         : "border-border-hairline bg-surface/98 text-on-surface"
@@ -152,7 +152,7 @@ export function HeaderNav({ inverse = false }: HeaderNavProps) {
                     <div className="px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-gray">
                       {link.label === "Furniture Custom" ? "Kategori Custom" : "Wilayah Jangkauan"}
                     </div>
-                    <ul className="space-y-0.5">
+                    <ul className="space-y-0.5 max-h-[70vh] overflow-y-auto pr-0.5">
                       <li role="none">
                         <Link
                           href={link.href}

@@ -27,7 +27,7 @@ const SERVICES_DESCRIPTION =
   "Kitchen set, lemari pakaian, lemari bawah tangga, backdrop TV, kamar tidur, hingga interior komersial — dirancang, diproduksi, dan dipasang satu tim.";
 
 export const metadata = buildMetadata({
-  title: "Layanan Furniture Custom",
+  title: "Layanan Desain Interior & Furniture Custom",
   description: SERVICES_DESCRIPTION,
   path: "/services",
 });
@@ -36,7 +36,7 @@ function servicesJsonLd() {
   return jsonLdGraph(
     webPageJsonLd({
       path: "/services",
-      name: "Layanan Furniture Custom",
+      name: "Layanan Desain Interior & Furniture Custom",
       description: SERVICES_DESCRIPTION,
       breadcrumb: true,
     }),

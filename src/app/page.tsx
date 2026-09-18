@@ -27,7 +27,7 @@ import {
 import { site } from "@/lib/site";
 
 export const metadata = buildMetadata({
-  title: `${site.name} — Interior & Furniture Custom`,
+  title: `${site.name} — Jasa Desain Interior & Furniture Custom Bandung`,
   // The full site.description runs to 177 characters; a SERP shows about 155.
   description: site.metaDescription,
   path: "/",
@@ -44,7 +44,7 @@ function homeJsonLd() {
   return jsonLdGraph(
     webPageJsonLd({
       path: "/",
-      name: `${site.name} — Interior & Furniture Custom`,
+      name: `${site.name} — Jasa Desain Interior & Furniture Custom Bandung`,
       description: site.metaDescription,
     }),
     {
